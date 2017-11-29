@@ -1,0 +1,42 @@
+
+exporter
+    make it a real addon
+
+    less parameters
+        make more OOP (or use globals)
+    
+    make a struct
+    export each mesh part data as struct
+    in list
+    
+    export the object transform (as matrix)
+    export 'poses'
+        (set of key:matrix pairs)
+    
+    make it a real object format
+        put all binary data in one file
+        store data offsets
+        put information in 'header'
+        compress the binary data? lol
+    
+need a quaternion lerp
+
+parse the binary data in C
+batch mesh data
+load object transforms
+render objects
+
+do parenting
+
+do shaders
+    vert shader is same
+    frag shader
+        static directional light
+        static ambient light
+        flat shading (gouraud shading)
+        
+white background
+make mech rotate
+        
+experiment
+    round floats to look like PS1 floating point precision errors
