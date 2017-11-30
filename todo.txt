@@ -1,13 +1,19 @@
 
-exporter
-    make it a real addon
+THIS IS ACTUALLY A LOT OF WORK
 
-    less parameters
-        make more OOP (or use globals)
-    
+
+exporter
     make a struct
     export each mesh part data as struct
     in list
+    HMMM
+        i obviously can't carry on adding each part by hand
+        it would clearly help to have a list of 
+        structs we can get data out of
+        to be honest, it's fine
+        it's just a little bit messier
+        than I wanted
+        
     
     export the object transform (as matrix)
     export 'poses'
@@ -40,3 +46,59 @@ make mech rotate
         
 experiment
     round floats to look like PS1 floating point precision errors
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+HMMMMMMMMMMMMM
+    
+struct BufferInfo {
+    // I guess the data type will be obvious from the context?
+    union {
+        GLuint *idata;
+        GLfloat *fdata;
+    } data;
+    char * externalData;
+    unsigned int length; // total number of elements
+    unsigned short stride; // number of elements per row
+    unsigned short size; // data type width in bytes
+    unsigned int datasize; // total size of buffer in bytes
+    unsigned int offset; // used after buffers initialized
+}
+
+GLuint somedata[425] = {...};
+
+// test
+struct BufferInfo headInfo = {
+    .data.idata = &somedata,
+    "some/path",
+    32,
+    3,
+    4,
+    384,
+    0
+}
+
+// example
+unsigned int offset = 0;
+for (int i = 0; i < LEN_BUFFERS; ++i) {
+    BufferInfo * binfo = buffers[i];
+    glBufferSubData( GL_ARRAY_BUFFER, offset, binfo->datasize, binfo->data.fdata);
+    offset += binfo->datasize;
+    binfo->offset = offset;
+    
+    ...
+    OR
+    ...
+    
+    glDrawElementsBaseVertex( GL_LINES, idx_info->length, GL_UNSIGNED_INT, (void*)idx_info->offset, vtx_info->vtx_offset);
+}
