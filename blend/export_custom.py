@@ -1,7 +1,7 @@
 
 bl_info = {
     "name": "Custom Export",
-    "description": "Export mesh as C header file.",
+    "description": "Export custom binary format.",
     "author": "Will Alcorn",
     "version": (1, 0),
     "blender": (2, 79, 0),
@@ -11,10 +11,61 @@ bl_info = {
     "category": "Import-Export"
 }
 
+# stupid idea:
+# it would be a funny limitation
+# to only allow 255 vertices
+# then can use char everywhere
+# (i guess you could automatically split up meshes...)
 
-import struct
-from os import mkdir, exists
-from os.path import abspath, dirname, join
+# NOTE
+# fixed is a short int
+# representing a fixed point decimal
+# with 3 signigicant digits
+# (range: -32 to 32)
+
+# format:
+# bytes     type    content
+################################
+# 4         ushort  num meshes
+################################
+# 4         uchar   name length
+# ~         char    name
+# 4         ushort  num vertices
+# ~         fixed   vertex data
+# 4         ushort  num indices
+# ~         fixed   index data
+# 4         ushort  num edges
+# ~         fixed   edge data
+# 4         ushort  num normals
+# ~         fixed   normal data
+# 4         ushort  num colors
+# ~         fixed   color data
+# 4         ushort  num uv
+# ~         fixed   uv data
+################################
+# 4         ushort  num objects
+################################
+# 4         uchar   name length
+# ~         char    name
+# 4         uchar   mesh name length
+# ~         char    mesh name
+# 4         uchar   parent name length
+# ~         char    parent name
+# 4*16      fixed   transform
+################################
+# 4         ushort  num animations
+################################
+# 4         uchar   object name length
+# ~         char    object name
+# 4         ushort  num keys
+# ~         AKey    animation keys
+#   4       ushort  AKey time
+#   4*16    fixed   AKey transform
+################################
+
+
+
+from struct import pack, calcsize
 
 import bpy
 from bpy.props import (
@@ -22,10 +73,12 @@ from bpy.props import (
     BoolProperty,
     EnumProperty
 )
-from bpy_extras.io_utils import ExportHelper, orientation_helper_factory, path_reference_mode  
-
-
-filepath = None
+from bpy_extras.io_utils import (
+    ExportHelper, 
+    orientation_helper_factory, 
+    path_reference_mode,
+    axis_conversion
+)
 
 
 def mesh_triangulate(me):
@@ -38,146 +91,135 @@ def mesh_triangulate(me):
 
 def normalize_name(name):
     return name.replace('.', '').lower()
-
-def get_data_info(data):
-    num = len(data)
-    stride = len(data[0])
-    f = data[0][0]
-    if type(f) == float:
-        fmt = 'f'
-    if type(f) == int:
-        fmt = 'I'
-    size = struct.calcsize(fmt)
-    datasize = size * stride * num
-    return num, stride, fmt, size, datasize
     
-def hwrite(path, size, fmt, items):
-    # hex write (silly)
-    c = '{{:0{}x}}'.format(size*2)
-    binfile = open(path, 'w')
-    count = 0
-    for row in items:
+def write_length(data):
+    # write the length of an iterable
+    l = pack('H', len(data))
+    out.write(l)
+            
+def write_array(data):
+    # write number of elements
+    write_length(data)
+    
+    fixed = type(data[0][0]) == float
+    fmt = 'h' if fixed else 'H'
+    
+    # write data
+    for row in data:
         for val in row:
-            b = struct.pack(fmt, val)
-            z = struct.unpack('I', b)[0]
-            s = c.format(z).upper()
-            binfile.write(s)
-            
-            count += size
-            count %= 16
-            if not count:
-                binfile.write('\n')
-    binfile.close()
-    
-def bwrite(path, size, fmt, items):
-    binfile = open(path, 'wb')
-    for row in items:
-        for val in row:
-            b = struct.pack(fmt, val)
-            binfile.write(b)
-    binfile.close()
-    
-def write_extern(method, out, objName, keyword, items):
-    arrayName = objName.lower() + keyword + "Data"
-    binaryFileName = (objName + '_' + keyword).lower()
-    defineBinary = (binaryFileName + "_FILE").upper()
-    defineName = (objName + '_NUM_' + keyword).upper()
-    defineSizeName = (objName + '_' + keyword + '_DATA_SIZE').upper()
-    
-    datadir = join(dirname(abspath(fp)), "data")
-    if not exists(datadir):
-        mkdir(datadir)
-    binpath = join(datadir, binaryFileName)
-    
-    num, stride, fmt, size, datasize = get_data_info(items)
-    method(binpath, size, fmt, items)
-    
-    # todo could also write stride and data type
-    out.write('#define {} {}\n'.format(defineBinary, binaryFileName))
-    out.write('#define {} {}\n'.format(defineName, num))
-    out.write('#define {} {}\n\n'.format(defineSizeName, datasize))
-    
-def write_binary(*args):
-    write_extern(bwrite, *args)
-    
-def write_hex(*args):
-    write_extern(hwrite, *args)
-    
-def write_C_array(out, name, keyword, items):
-    arrayName = name.lower() + keyword.title() + "Data"
-    defineName = (name + '_NUM_' + keyword).upper()
-    defineSizeName = (name + '_' + keyword + '_DATA_SIZE').upper()
-    
-    num, stride, fmt, size, datasize = get_data_info(items)
-    gltype = "GLfloat" if fmt == 'f' else "GLuint" # todo more?
-    
-    out.write('{} {}[] = {{\n    '.format(gltype, arrayName))
-    for i in range(num):
-        row = items[i]
-        lastrow = i == num - 1
-        for j in range(stride):
-            item = row[j]
-            
-            if isinstance(item, float):
-                out.write(' {0:.3f}'.format(item))
-            else:
-                out.write(' {}'.format(item))
-            
-            islast = j == len(row) - 1
-            if lastrow and islast:
-                out.write('\n')
-            elif islast:
-                out.write(',\n    ')
-            else:
-                out.write(',')
-    out.write('};\n\n')
-    
-    out.write('#define {} {}\n'.format(defineName, len(items)))
-    out.write('#define {} {}\n\n'.format(defineSizeName, datasize))
+            if fixed:
+                val = int(val * 1000) # fixed point precision 3
+            b = pack(fmt, val)
+            out.write(b)
 
-def export_obj(context, out, writer, obj, use_indices, use_edges, use_normals, use_colors, use_uvs):
+def write_name(name):
+    # writes number of characters, followed by char array
+    name = normalize_name(name)
+    name = name.encode()
+    
+    # write name length (unsigned char)
+    l = pack('B', len(name))
+    out.write(l)
+    
+    l = len(name)
+    fmt = str(l) + 's'
+    b = pack(fmt, name)
+    out.write(b)
+    
+def write_matrix(mat):
+    m = [i for vec in mat for i in vec]
+    for f in m:
+        b = pack('f', f)
+        out.write(b)
+    
+def write_mesh(obj, use_indices, use_edges, use_normals, use_colors, use_uvs):
     data = obj.data
-    name = normalize_name(obj.name)
     
+    # write name
+    write_name(data.name)
+    
+    # write mesh data
     verts = [list(vert.co) for vert in data.vertices]
-    count = writer(out, name, 'vertex', verts)
+    write_array(verts)
     
     if use_indices:
         mesh_triangulate(data) # doesn't export quads/ngons
         indices = [list(poly.vertices) for poly in data.polygons]
-        count = writer(out, name, 'index', indices)
+        write_array(indices)
     
     if use_edges:
         edges = [list(edge.vertices) for edge in data.edges]
-        count = writer(out, name, 'edge', edges)
+        write_array(edges)
     
     if use_normals:
         normals = [list(vert.normal) for vert in data.vertices]
-        count = writer(out, name, 'normal', normals)
+        write_array(normals)
 
     if use_colors:
         colors = [list(color.color) for color in data.vertex_colors[0].data]
-        count = writer(out, name, 'color', colors)
+        write_array(colors)
     
     if use_uvs:    
         uvs = [list(uv.uv) for uv in data.uv_layers[0].data]
-        count = writer(out, name, 'uv', uvs)
+        write_array(uvs)
             
+def write_obj(obj):
 
-def custom_export(context, writer, *args):
-    out = open(filepath, 'w')
-
-    # HMM you could create a struct
-    # and store data about objects with it
-    # in a list
-    # then can iterate list for easy batching/rendering
+    write_name(obj.name)
+    write_name(obj.data.name)
     
-    out.write('\n')
-    out.write('#include <SDL_opengl.h>\n\n')
+    # write parent name
+    if obj.parent:
+        write_name(obj.parent.name)
+    else:
+        out.write(pack('B', 0))
+        
+    # use OrientationHelper?
+    write_matrix(obj.matrix_local)
 
-    selected = context.selected_objects
-    for obj in selected:
-        export_obj(context, out, writer, obj, *args)
+    
+def write_anim(obj):
+
+    write_name(obj.name)
+    
+    # todo we could write action.name
+    # but only one animation for now
+    
+    # write animation keys
+    # we have to iterate over frame range
+    # and just write out the transform
+    anim = obj.animation_data.action
+    start, end = anim.frame_range
+    start = int(start)
+    end = int(end)
+    out.write(pack('I', end - start))
+    for t in range(start, end+1):
+        bpy.context.scene.frame_set(t)
+
+        out.write(pack('f', t))
+        write_matrix(obj.matrix_local)
+    
+ 
+def custom_export(filepath, *args):
+    global out
+    out = open(filepath, 'wb')
+
+    objs = bpy.context.selected_objects
+    
+    # write meshes
+    write_length(objs)
+    for obj in objs:
+        write_mesh(obj, *args)
+        
+    # write objects
+    write_length(objs)
+    for obj in objs:
+        write_obj(obj)
+    
+    # write animations
+    write_length(objs)
+    for obj in objs:
+        write_anim(obj)
         
     out.close()
     
@@ -189,23 +231,15 @@ class SimpleOperator(bpy.types.Operator, ExportHelper, IOOBJOrientationHelper):
     bl_label = "Custom Export"
     bl_options = {'REGISTER', 'PRESET'}
     
-    filename_ext = ".h"
+    filename_ext = ".3d"
     filter_glob = StringProperty(
-        default="*.h",
+        default="*.3d",
         options={'HIDDEN'},
     )
     
     path_mode = path_reference_mode
     check_extension = True
     
-    writer = EnumProperty(
-        "Writer",
-        items=[
-            ('0', 'Header Only', ''),
-            ('1', 'External Binary', ''),
-            ('2', 'External Hex', '')
-        ]
-    )
     indices = BoolProperty("Indices", default=True)
     edges = BoolProperty("Edges")
     normals = BoolProperty("Normals")
@@ -217,15 +251,20 @@ class SimpleOperator(bpy.types.Operator, ExportHelper, IOOBJOrientationHelper):
         return context.active_object is not None
 
     def execute(self, context):
-        global filepath
-        filepath = self.filepath
-        writers = [write_C_array, write_binary, write_hex]
-        writer = writers[int(self.writer)]
-        custom_export(context, writer, self.indices, self.edges, self.normals, self.colors, self.uvs)
+        global global_matrix
+        global_matrix = axis_conversion(from_forward=self.axis_forward,
+                                        from_up=self.axis_up,
+                                        ).to_4x4()
+        # i guess, to use global_matrix
+        # you have to multiply by all
+        # matrices, vertices, normals?
+    
+        custom_export(self.filepath, self.indices, self.edges, self.normals, self.colors, self.uvs)
+        context.scene.frame_set(1)
         return {'FINISHED'}
     
 def menu_func_export(self, context):
-    self.layout.operator(SimpleOperator.bl_idname, text="Custom Export (.c)")
+    self.layout.operator(SimpleOperator.bl_idname, text="Custom Export (.3d)")
 
 
 def register():

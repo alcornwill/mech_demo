@@ -2,35 +2,16 @@
 THIS IS ACTUALLY A LOT OF WORK
 
 
-exporter
-    make a struct
-    export each mesh part data as struct
-    in list
-    HMMM
-        i obviously can't carry on adding each part by hand
-        it would clearly help to have a list of 
-        structs we can get data out of
-        to be honest, it's fine
-        it's just a little bit messier
-        than I wanted
-        
-    
-    export the object transform (as matrix)
-    export 'poses'
-        (set of key:matrix pairs)
-    
-    make it a real object format
-        put all binary data in one file
-        store data offsets
-        put information in 'header'
-        compress the binary data? lol
-    
-need a quaternion lerp
+loader
+    parse the binary data
+    batch mesh data
+    load object transforms
+    render objects
 
-parse the binary data in C
-batch mesh data
-load object transforms
-render objects
+white background
+make mech rotate
+
+need a quaternion lerp
 
 do parenting
 
@@ -40,65 +21,75 @@ do shaders
         static directional light
         static ambient light
         flat shading (gouraud shading)
-        
-white background
-make mech rotate
-        
+
+exporter
+    endianness might be wrong?
+    compression!
+        lzw
+
 experiment
     round floats to look like PS1 floating point precision errors
     
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-HMMMMMMMMMMMMM
-    
-struct BufferInfo {
-    // I guess the data type will be obvious from the context?
-    union {
-        GLuint *idata;
-        GLfloat *fdata;
-    } data;
-    char * externalData;
-    unsigned int length; // total number of elements
-    unsigned short stride; // number of elements per row
-    unsigned short size; // data type width in bytes
-    unsigned int datasize; // total size of buffer in bytes
-    unsigned int offset; // used after buffers initialized
+OK
+do a loader
+it returns these data structures
+
+// LOADER STRUCTS
+
+struct MeshInfo {
+    char * name;
+    GLuint *indices;
+    GLuint *edges;
+    GLfloat *vertices;
+    GLfloat *normals;
+    GLfloat *colors;
+    GLfloat *uvs;
+    unsigned int numIndices;
+    unsigned int numEdges;
+    unsigned int numVertices;
+    unsigned int numNormals;
+    unsigned int numColors;
+    unsigned int numUVs;
 }
 
-GLuint somedata[425] = {...};
-
-// test
-struct BufferInfo headInfo = {
-    .data.idata = &somedata,
-    "some/path",
-    32,
-    3,
-    4,
-    384,
-    0
+struct ObjectInfo {
+    char * name;
+    char * meshName;
+    char * parentName;
+    mat4_t transform;
 }
 
-// example
-unsigned int offset = 0;
-for (int i = 0; i < LEN_BUFFERS; ++i) {
-    BufferInfo * binfo = buffers[i];
-    glBufferSubData( GL_ARRAY_BUFFER, offset, binfo->datasize, binfo->data.fdata);
-    offset += binfo->datasize;
-    binfo->offset = offset;
-    
-    ...
-    OR
-    ...
-    
-    glDrawElementsBaseVertex( GL_LINES, idx_info->length, GL_UNSIGNED_INT, (void*)idx_info->offset, vtx_info->vtx_offset);
+struct AnimationInfo {
+    char * objectName;
+    AnimationKeyInfo * keys;
+    unsigned int numKeys;
 }
+
+struct AnimationKeyInfo {
+    unsigned int time;
+    mat4_t transform;
+}
+
+
+// GAME STRUCTS
+
+struct DrawElementInfo {
+    unsigned int count;
+    unsigned int offset; // start of indices
+    unsigned int basevertex; // number of preceding vertices
+}
+
+struct Object {
+    Object * parent;
+    Object * children;
+    MeshInfo * mesh;
+    AnimationInfo * anim;
+    mat4_t transform;
+    DrawElementInfo draw;
+}
+
+
+
