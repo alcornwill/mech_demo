@@ -1,6 +1,4 @@
 
-THIS IS ACTUALLY A LOT OF WORK
-
 
 loader
     parse the binary data
@@ -31,65 +29,3 @@ experiment
     round floats to look like PS1 floating point precision errors
     
     
-    
-    
-OK
-do a loader
-it returns these data structures
-
-// LOADER STRUCTS
-
-struct MeshInfo {
-    char * name;
-    GLuint *indices;
-    GLuint *edges;
-    GLfloat *vertices;
-    GLfloat *normals;
-    GLfloat *colors;
-    GLfloat *uvs;
-    unsigned int numIndices;
-    unsigned int numEdges;
-    unsigned int numVertices;
-    unsigned int numNormals;
-    unsigned int numColors;
-    unsigned int numUVs;
-}
-
-struct ObjectInfo {
-    char * name;
-    char * meshName;
-    char * parentName;
-    mat4_t transform;
-}
-
-struct AnimationInfo {
-    char * objectName;
-    AnimationKeyInfo * keys;
-    unsigned int numKeys;
-}
-
-struct AnimationKeyInfo {
-    unsigned int time;
-    mat4_t transform;
-}
-
-
-// GAME STRUCTS
-
-struct DrawElementInfo {
-    unsigned int count;
-    unsigned int offset; // start of indices
-    unsigned int basevertex; // number of preceding vertices
-}
-
-struct Object {
-    Object * parent;
-    Object * children;
-    MeshInfo * mesh;
-    AnimationInfo * anim;
-    mat4_t transform;
-    DrawElementInfo draw;
-}
-
-
-

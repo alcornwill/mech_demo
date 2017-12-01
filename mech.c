@@ -7,7 +7,8 @@
 
 #define MATH_3D_IMPLEMENTATION
 #include "math_3d.h"
-#include "mech.h"
+#define F3D_DEBUG
+#include "loader.h"
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
@@ -32,6 +33,24 @@ void close();
 void printProgramLog( GLuint program );
 void printShaderLog( GLuint shader );
 
+
+struct DrawElementInfo {
+    unsigned int count;
+    unsigned int offset; // start of indices
+    unsigned int basevertex; // number of preceding vertices
+};
+
+struct Object {
+    struct Object * parent;
+    struct Object * children;
+    struct MeshInfo * mesh;
+    struct AnimationInfo * anim;
+    mat4_t transform;
+    struct DrawElementInfo draw;
+};
+
+
+
 SDL_Window* gWindow = NULL;
 SDL_GLContext gContext;
 
@@ -44,6 +63,8 @@ GLuint gVAO = 0;
 
 unsigned char *keys;
 int quit = 0;
+
+struct File3DInfo * f3dinfo;
 
 mat4_t proj;
 mat4_t view;
@@ -194,30 +215,32 @@ int initGL()
             
     //Initialize clear color
     glClearColor( 0.f, 0.f, 0.f, 1.f );
+    
+    f3dinfo = loadFile3D("../mech.3d");
 
     // VAO
-    glGenVertexArrays(1, &gVAO);
-    glBindVertexArray(gVAO);
+    // glGenVertexArrays(1, &gVAO);
+    // glBindVertexArray(gVAO);
     
-    //Create VBO
-    glGenBuffers( 1, &gVBO );
-    glBindBuffer( GL_ARRAY_BUFFER, gVBO );
-    glBufferData( GL_ARRAY_BUFFER, TANK_VERTEX_DATA_SIZE + LANDSCAPE_VERTEX_DATA_SIZE, NULL, GL_STATIC_DRAW );
-    glBufferSubData( GL_ARRAY_BUFFER, 0, TANK_VERTEX_DATA_SIZE, tankVertexData);
-    glBufferSubData( GL_ARRAY_BUFFER, TANK_VERTEX_DATA_SIZE, LANDSCAPE_VERTEX_DATA_SIZE, landscapeVertexData);
+    // //Create VBO
+    // glGenBuffers( 1, &gVBO );
+    // glBindBuffer( GL_ARRAY_BUFFER, gVBO );
+    // glBufferData( GL_ARRAY_BUFFER, TANK_VERTEX_DATA_SIZE + LANDSCAPE_VERTEX_DATA_SIZE, NULL, GL_STATIC_DRAW );
+    // glBufferSubData( GL_ARRAY_BUFFER, 0, TANK_VERTEX_DATA_SIZE, tankVertexData);
+    // glBufferSubData( GL_ARRAY_BUFFER, TANK_VERTEX_DATA_SIZE, LANDSCAPE_VERTEX_DATA_SIZE, landscapeVertexData);
     
-    // shader input
-    glEnableVertexAttribArray( gVertexPos3DLocation );
-    glVertexAttribPointer( gVertexPos3DLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL );
+    // // shader input
+    // glEnableVertexAttribArray( gVertexPos3DLocation );
+    // glVertexAttribPointer( gVertexPos3DLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL );
     
-    //Create IBO
-    glGenBuffers( 1, &gIBO );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, gIBO );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, TANK_EDGE_DATA_SIZE + LANDSCAPE_EDGE_DATA_SIZE, NULL, GL_STATIC_DRAW );
-    glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, TANK_EDGE_DATA_SIZE, tankEdgeData);
-    glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, TANK_EDGE_DATA_SIZE, LANDSCAPE_EDGE_DATA_SIZE, landscapeEdgeData);
+    // //Create IBO
+    // glGenBuffers( 1, &gIBO );
+    // glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, gIBO );
+    // glBufferData( GL_ELEMENT_ARRAY_BUFFER, TANK_EDGE_DATA_SIZE + LANDSCAPE_EDGE_DATA_SIZE, NULL, GL_STATIC_DRAW );
+    // glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, TANK_EDGE_DATA_SIZE, tankEdgeData);
+    // glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, TANK_EDGE_DATA_SIZE, LANDSCAPE_EDGE_DATA_SIZE, landscapeEdgeData);
 
-    glBindVertexArray(0);
+    // glBindVertexArray(0);
     
 	return 1;
 }
@@ -300,33 +323,31 @@ void render()
 {
 	glClear( GL_COLOR_BUFFER_BIT );
     
-    glUseProgram( gProgramID );
-    glBindVertexArray(gVAO);
+    // glUseProgram( gProgramID );
+    // glBindVertexArray(gVAO);
     
-    // tank
-    glUniformMatrix4fv(gMVPMatrixLocation, 1, GL_FALSE, &gTankMVPMat);
-    glDrawElementsBaseVertex( GL_LINES, TANK_NUM_EDGE, GL_UNSIGNED_INT, NULL, 0 );
+    // // tank
+    // glUniformMatrix4fv(gMVPMatrixLocation, 1, GL_FALSE, &gTankMVPMat);
+    // glDrawElementsBaseVertex( GL_LINES, TANK_NUM_EDGE, GL_UNSIGNED_INT, NULL, 0 );
     
-    // landscape
-    glUniformMatrix4fv(gMVPMatrixLocation, 1, GL_FALSE, &gLandscapeMVPMat);
-    glDrawElementsBaseVertex( GL_LINES, LANDSCAPE_NUM_EDGE, GL_UNSIGNED_INT, (void*)TANK_EDGE_DATA_SIZE, TANK_NUM_VERTEX / 3);
+    // // landscape
+    // glUniformMatrix4fv(gMVPMatrixLocation, 1, GL_FALSE, &gLandscapeMVPMat);
+    // glDrawElementsBaseVertex( GL_LINES, LANDSCAPE_NUM_EDGE, GL_UNSIGNED_INT, (void*)TANK_EDGE_DATA_SIZE, TANK_NUM_VERTEX / 3);
     
-    glUseProgram( 0 );
+    // glUseProgram( 0 );
 
     SDL_GL_SwapWindow( gWindow );
 }
 
 void close()
 {
-    SDL_FreeWAV(wav_buffer);
-    wav_buffer = NULL;
+    free(f3dinfo); // could do this after load?
     
 	glDeleteProgram( gProgramID );
     
 	SDL_DestroyWindow( gWindow );
 	gWindow = NULL;
 
-    SDL_AudioQuit();
 	SDL_Quit();
 }
 
