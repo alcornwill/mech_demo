@@ -1,6 +1,6 @@
 
 
-OBJS = mech.c
+OBJS = mech.c loader.c
 CC = gcc
 INCLUDE_PATHS = -Iinclude\SDL2 -Iinclude
 LIBRARY_PATHS = -Llib

@@ -7,6 +7,7 @@
 
 #define MATH_3D_IMPLEMENTATION
 #include "math_3d.h"
+#include "mech.h"
 #define F3D_DEBUG
 #include "loader.h"
 
@@ -23,39 +24,20 @@
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define CLAMP(a, b, c) (MAX(b, MIN(a, c)))
 
+#define FIXED(f) (f / 1000)
 
-int init();
-int initGL();
-void initTank();
-void update(float dt);
-void render();
-void close();
-void printProgramLog( GLuint program );
-void printShaderLog( GLuint shader );
-
-
-struct DrawElementInfo {
-    unsigned int count;
-    unsigned int offset; // start of indices
-    unsigned int basevertex; // number of preceding vertices
-};
-
-struct Object {
-    struct Object * parent;
-    struct Object * children;
-    struct MeshInfo * mesh;
-    struct AnimationInfo * anim;
-    mat4_t transform;
-    struct DrawElementInfo draw;
-};
-
-
+unsigned int gNumObjects = 0;
+struct Object * gObjects = NULL;
+unsigned int gVBOSize = 0;
+unsigned int gIBOSize = 0;
 
 SDL_Window* gWindow = NULL;
 SDL_GLContext gContext;
 
 GLuint gProgramID = 0;
 GLint gVertexPos3DLocation = -1;
+GLint gNormalLocation = -1;
+GLint gColorLocation = -1;
 GLint gMVPMatrixLocation = -1;
 GLuint gVBO = 0;
 GLuint gIBO = 0;
@@ -64,29 +46,11 @@ GLuint gVAO = 0;
 unsigned char *keys;
 int quit = 0;
 
-struct File3DInfo * f3dinfo;
-
 mat4_t proj;
 mat4_t view;
 mat4_t pv;
 
-mat4_t proj_ortho;
-mat4_t view_ortho;
-mat4_t pv_ortho;
-
-float gTankRotSpeed = 2 * M_PI; // one revolution per second
-float gTankSpeed = 5.0f; // 5 units per second
-
-float gPlayerInputY = 0;
-float gPlayerInputRot = 0;
-
-vec3_t gTankPosition;
-float gTankRotZ;
-mat4_t gTankMVPMat;
-mat4_t gTankModelMat;
-
-mat4_t gLandscapeMVPMat;
-mat4_t gLandscapeModelMat;
+unsigned char pose = 0;
 
 
 int init()
@@ -134,6 +98,8 @@ int init()
         printf( "Unable to initialize OpenGL!\n" );
         return 0;
     }
+    
+    initBuffers();
 
 	return 1;
 }
@@ -205,6 +171,22 @@ int initGL()
         return 0;
     }
     
+    // normal
+    gNormalLocation = glGetAttribLocation( gProgramID, "normal" );
+    if( gNormalLocation == -1 )
+    {
+        printf( "normal is not a valid glsl program variable!\n" );
+        return 0;
+    }
+    
+    // color
+    gColorLocation = glGetAttribLocation( gProgramID, "color" );
+    if( gColorLocation == -1 )
+    {
+        printf( "color is not a valid glsl program variable!\n" );
+        return 0;
+    }
+    
     //Get model matrix location
     gMVPMatrixLocation = glGetUniformLocation( gProgramID, "mvp" );
     if( gMVPMatrixLocation == -1 )
@@ -216,36 +198,252 @@ int initGL()
     //Initialize clear color
     glClearColor( 0.f, 0.f, 0.f, 1.f );
     
-    f3dinfo = loadFile3D("../mech.3d");
-
-    // VAO
-    // glGenVertexArrays(1, &gVAO);
-    // glBindVertexArray(gVAO);
-    
-    // //Create VBO
-    // glGenBuffers( 1, &gVBO );
-    // glBindBuffer( GL_ARRAY_BUFFER, gVBO );
-    // glBufferData( GL_ARRAY_BUFFER, TANK_VERTEX_DATA_SIZE + LANDSCAPE_VERTEX_DATA_SIZE, NULL, GL_STATIC_DRAW );
-    // glBufferSubData( GL_ARRAY_BUFFER, 0, TANK_VERTEX_DATA_SIZE, tankVertexData);
-    // glBufferSubData( GL_ARRAY_BUFFER, TANK_VERTEX_DATA_SIZE, LANDSCAPE_VERTEX_DATA_SIZE, landscapeVertexData);
-    
-    // // shader input
-    // glEnableVertexAttribArray( gVertexPos3DLocation );
-    // glVertexAttribPointer( gVertexPos3DLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL );
-    
-    // //Create IBO
-    // glGenBuffers( 1, &gIBO );
-    // glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, gIBO );
-    // glBufferData( GL_ELEMENT_ARRAY_BUFFER, TANK_EDGE_DATA_SIZE + LANDSCAPE_EDGE_DATA_SIZE, NULL, GL_STATIC_DRAW );
-    // glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, 0, TANK_EDGE_DATA_SIZE, tankEdgeData);
-    // glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, TANK_EDGE_DATA_SIZE, LANDSCAPE_EDGE_DATA_SIZE, landscapeEdgeData);
-
-    // glBindVertexArray(0);
-    
-	return 1;
+    return 1;
 }
 
-void initTank()
+void initBuffers() {
+    // VAO
+    glGenVertexArrays(1, &gVAO);
+    glBindVertexArray(gVAO);
+    
+    //Create VBO
+    glGenBuffers( 1, &gVBO );
+    glBindBuffer( GL_ARRAY_BUFFER, gVBO );
+    glBufferData( GL_ARRAY_BUFFER, gVBOSize, NULL, GL_STATIC_DRAW );
+    
+    // add data
+    unsigned int vboOffset = 0;
+    unsigned int baseVertex = 0;
+    
+    // vertex data
+    glEnableVertexAttribArray( gVertexPos3DLocation );
+    glVertexAttribPointer( gVertexPos3DLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void *) vboOffset);
+    
+    for (int i = 0; i < gNumObjects; ++i) {
+        struct Object *obj = &gObjects[i];
+        size_t size = obj->mesh.numVertices * 4 * 3;
+        glBufferSubData( GL_ARRAY_BUFFER, vboOffset, size, obj->mesh.vertices);
+        vboOffset += size;
+        obj->drawinfo.baseVertex = baseVertex;
+        baseVertex += obj->mesh.numVertices;
+    }
+    
+    // normal data
+    glEnableVertexAttribArray( gNormalLocation );
+    glVertexAttribPointer( gNormalLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void *)vboOffset );
+    
+    for (int i = 0; i < gNumObjects; ++i) {
+        struct Object *obj = &gObjects[i];
+        size_t size = obj->mesh.numNormals * 4 * 3;
+        glBufferSubData( GL_ARRAY_BUFFER, vboOffset, size, obj->mesh.normals);
+        vboOffset += size;
+    }
+    
+    // color data
+    glEnableVertexAttribArray( gColorLocation );
+    glVertexAttribPointer( gColorLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void *)vboOffset );
+    
+    for (int i = 0; i < gNumObjects; ++i) {
+        struct Object *obj = &gObjects[i];
+        size_t size = obj->mesh.numColors * 4 * 3;
+        glBufferSubData( GL_ARRAY_BUFFER, vboOffset, size, obj->mesh.colors);
+        vboOffset += size;
+    }
+    // TODO UVs (if present)
+    
+    
+    //Create IBO
+    glGenBuffers( 1, &gIBO );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, gIBO );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, gIBOSize, NULL, GL_STATIC_DRAW );
+    
+    unsigned int iboOffset = 0;
+    
+    for (int i = 0; i < gNumObjects; ++i) {
+        struct Object *obj = &gObjects[i];
+        size_t size = obj->mesh.numIndices * 4;
+        glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, iboOffset, size, obj->mesh.indices);
+        obj->drawinfo.offset = iboOffset;
+        iboOffset += size;
+    }
+    // TODO edges if present
+
+    glBindVertexArray(0);
+}
+
+void setObjectParent(struct Object * obj, struct Object * parent) {
+    obj->parent = parent;
+    ++parent->numChildren;
+    
+    // realloc child array
+    struct Object * newmem;
+    newmem = realloc(parent->children, sizeof(struct Object) * parent->numChildren);
+    if (!newmem) {
+        printf("ERROR memory reallocation error!");
+    }
+    parent->children = newmem;
+    
+    // set child
+    parent->children[parent->numChildren-1] = *obj;
+}
+
+void load3DFile() {
+        
+    struct File3DInfo * f3dinfo = loadFile3D("../mech.3d");
+
+    gObjects = malloc(sizeof(struct Object) * f3dinfo->numObjects);
+    
+    // for each object in f3dinfo
+    for (int i=0; i < f3dinfo->numObjects; ++i) {
+        struct ObjectInfo * objinfo = &f3dinfo->objects[i];
+        
+        // create new Object
+        struct Object * obj = &gObjects[i];
+        obj->parent = NULL;
+        obj->children = NULL;
+        // TODO copy the name
+        obj->name = malloc(objinfo->nameLen);
+        memcpy(obj->name, objinfo->name, objinfo->nameLen);
+        
+        // copy the transform
+        //short * m = &objinfo.transform;
+        // lol
+        // todo decompose transform matrix to position and rotation
+        // key.transform = mat4(
+            // FIXED(m[0]), FIXED(m[1]), FIXED(m[2]), FIXED(m[3]), 
+            // FIXED(m[4]), FIXED(m[5]), FIXED(m[6]), FIXED(m[7]),
+            // FIXED(m[8]), FIXED(m[9]), FIXED(m[10]), FIXED(m[12]),
+            // FIXED(m[13]), FIXED(m[14]), FIXED(m[15]), FIXED(m[16])
+        // );
+        
+        // find mesh with name objinfo->meshName
+        for (int j=0; j < f3dinfo->numMeshes; ++j) {
+            struct MeshInfo * meshinfo = &f3dinfo->meshes[j];
+            if (strcmp(meshinfo->name, objinfo->meshName)) {
+                // copy data
+                obj->mesh.numVertices = meshinfo->numVertices;
+                obj->mesh.numIndices = meshinfo->numIndices;
+                obj->mesh.numEdges = meshinfo->numEdges;
+                obj->mesh.numNormals = meshinfo->numNormals;
+                obj->mesh.numColors = meshinfo->numColors;
+                obj->mesh.numUVs = meshinfo->numUVs;
+                
+                // we can just copy the index and edge data
+                if (obj->mesh.numIndices) {
+                    size_t size = 2 * 3 * obj->mesh.numIndices;
+                    obj->mesh.indices = malloc(size);
+                    memcpy(obj->mesh.indices, meshinfo->indices, size);
+                } else {
+                    obj->mesh.indices = NULL;
+                }
+                
+                // copy edges
+                if (obj->mesh.numEdges) {
+                    size_t size = 2 * 2 * obj->mesh.numEdges;
+                    obj->mesh.edges = malloc(size);
+                    memcpy(obj->mesh.edges, meshinfo->edges, size);
+                } else {
+                    obj->mesh.edges = NULL;
+                }
+                
+                // NOW
+                // we have to divide every single float
+                // by 1000
+                // because I decided to store as fixed-point...
+                
+                // copy vertices
+                obj->mesh.vertices = malloc(4 * 3 * obj->mesh.numVertices);
+                for (int k = 0; k < obj->mesh.numVertices; ++k) {
+                    obj->mesh.vertices[k] = FIXED(meshinfo->vertices[k]);
+                }
+                
+                // copy normals
+                obj->mesh.normals = malloc(4 * 3 * obj->mesh.numNormals);
+                for (int k = 0; k < obj->mesh.numNormals; ++k) {
+                    obj->mesh.normals[k] = FIXED(meshinfo->normals[k]);
+                }
+                
+                // copy colors
+                obj->mesh.colors = malloc(4 * 3 * obj->mesh.numColors);
+                for (int k = 0; k < obj->mesh.numColors; ++k) {
+                    obj->mesh.colors[k] = FIXED(meshinfo->colors[k]);
+                }
+                
+                // copy uvs
+                obj->mesh.uvs = malloc(4 * 3 * obj->mesh.numUVs);
+                for (int k = 0; k < obj->mesh.numUVs; ++k) {
+                    obj->mesh.uvs[k] = FIXED(meshinfo->uvs[k]);
+                }
+                
+                // TODO we will need useEdges somewhere?
+                // storing the attributes used is useful anyway
+                
+                break;
+            }
+        }
+        
+        // find anim with name objinfo->animName
+        for (int j=0; j < f3dinfo->numAnims; ++j) {
+            struct AnimInfo * animinfo = &f3dinfo->anims[j];
+            if (strcmp(animinfo->objectName, objinfo->animName)) {
+                // copy keys
+                obj->anim.numKeys = animinfo->numKeys;
+                obj->anim.keys = malloc(sizeof(struct AnimKey) * obj->anim.numKeys);
+                
+                for (int k = 0; k < obj->anim.numKeys; ++k) {
+                    struct AnimKey * key = &obj->anim.keys[k];
+                    struct AnimKeyInfo * keyinfo = &animinfo->keys[k];
+                    
+                    key->time = keyinfo->time;
+                    
+                    short * t = &keyinfo->transform;
+                    key->transform = mat4(
+                        FIXED(t[0]), FIXED(t[1]), FIXED(t[2]), FIXED(t[3]), 
+                        FIXED(t[4]), FIXED(t[5]), FIXED(t[6]), FIXED(t[7]),
+                        FIXED(t[8]), FIXED(t[9]), FIXED(t[10]), FIXED(t[12]),
+                        FIXED(t[13]), FIXED(t[14]), FIXED(t[15]), FIXED(t[16])
+                    );
+                }
+            }
+        }
+    }
+    
+    // iterate over objects again
+    // set the parent
+    for (int i = 0; i < gNumObjects; ++i) {
+        struct ObjectInfo * objinfo = &f3dinfo->objects[i];
+        struct Object * obj = &gObjects[i];
+        
+        // find parent
+        if (objinfo->parentName) {
+            for (int j = 0; j < gNumObjects; ++j) {
+                struct Object * parent = &gObjects[j];
+                if (strcmp(parent->name, objinfo->parentName)) {
+                    setObjectParent(obj, parent);
+                    break;
+                }
+            }   
+        }
+    }
+    
+    // calculate gVBOSize and gIBOSize
+    for (int i = 0; i < gNumObjects; ++i) {
+        struct Mesh * mesh = &gObjects[i].mesh;
+        
+        gVBOSize += 4 * 3 * mesh->numVertices;
+        gVBOSize += 4 * 3 * mesh->numNormals;
+        gVBOSize += 4 * 3 * mesh->numColors;
+        gVBOSize += 4 * 2 * mesh->numUVs;
+        
+        gIBOSize += 3 * mesh->numIndices;
+        // gIBOSize += 2 * mesh.numEdges;
+    }
+    
+    
+    f3dFree(f3dinfo);
+}
+
+void initMech()
 {    
     // perspective projection and view matrix
     proj = m4_perspective(FOV, ASPECT_RATIO, NEAR, FAR);
@@ -254,24 +452,6 @@ void initTank()
     view = m4_mul(view, m4_rotation_x(-M_PI / 2));
     
     pv = m4_mul(proj, view);
-    
-    // orthographic projection and view matrix
-    float ortho_scale = 0.5f;
-    // everything is all inverted...
-    proj_ortho = m4_ortho(ortho_scale, -ortho_scale, -ortho_scale, ortho_scale, FAR, NEAR);
-    
-    view_ortho = m4_translation(vec3(0, 0, 5));
-    view_ortho = m4_mul(view_ortho, m4_rotation_x(-M_PI / 2));
-    
-    pv_ortho = m4_mul(proj_ortho, view_ortho);
-    
-    
-    // object positions
-    gTankPosition = vec3(0,0,0);
-    gTankRotZ = 0;
-    gTankModelMat = m4_identity();
-    
-    gLandscapeModelMat = m4_identity();
 }
 
 void update(float dt)
@@ -279,70 +459,53 @@ void update(float dt)
     // parse player input
     // https://wiki.libsdl.org/SDL_Scancode
     
-    if (keys[SDL_SCANCODE_W])
-        gPlayerInputY = 1;
-    else if (keys[SDL_SCANCODE_S])
-        gPlayerInputY = -1;
-    else
-        gPlayerInputY = 0;
-    
-    if (keys[SDL_SCANCODE_A])
-        gPlayerInputRot = 1;
-    else if (keys[SDL_SCANCODE_D])
-        gPlayerInputRot = -1;
-    else
-        gPlayerInputRot = 0;
+    if (keys[SDL_SCANCODE_1])
+        pose = 0;
+    if (keys[SDL_SCANCODE_2])
+        pose = 1;
+    if (keys[SDL_SCANCODE_3])
+        pose = 2;
+    if (keys[SDL_SCANCODE_4])
+        pose = 3;
+    if (keys[SDL_SCANCODE_5])
+        pose = 4;
     
     int x = 0, y = 0;
     SDL_GetMouseState( &x, &y );
     
+    // TODO linear interpolation
+    // and sound effect
     
-    // move tank with player input
-    // rotation
-    gTankRotZ += gPlayerInputRot * gTankRotSpeed * dt;
-    gTankRotZ = fmod(gTankRotZ, 2.0f * M_PI);
-    
-    // get forward vector
-    vec3_t velocity = vec3(0.0f, gPlayerInputY * gTankSpeed * dt, 0.0f);
-    mat4_t rotation = m4_rotation_z(gTankRotZ);
-    velocity = m4_mul_dir(rotation, velocity);
-    
-    // apply velocity
-    gTankPosition = v3_add(gTankPosition, velocity);
-    
-    // tank matrix
-    gTankModelMat = m4_translation(gTankPosition);
-    gTankModelMat = m4_mul(gTankModelMat, m4_rotation_z(gTankRotZ));
-    gTankMVPMat = m4_mul(pv, gTankModelMat);
-    
-    // landscape matrix
-    gLandscapeMVPMat = m4_mul(pv_ortho, gLandscapeModelMat);
+    // set model matrix = animation transform
+    for (int i=0; i < gNumObjects; ++i) {
+        struct Object * obj = &gObjects[i];
+        
+        struct AnimKey * key = &obj->anim.keys[pose];
+        obj->model = key->transform;
+        obj->mvp = m4_mul(pv, obj->model);
+    }
 }
 
 void render()
 {
 	glClear( GL_COLOR_BUFFER_BIT );
     
-    // glUseProgram( gProgramID );
-    // glBindVertexArray(gVAO);
+    glUseProgram( gProgramID );
+    glBindVertexArray(gVAO);
     
-    // // tank
-    // glUniformMatrix4fv(gMVPMatrixLocation, 1, GL_FALSE, &gTankMVPMat);
-    // glDrawElementsBaseVertex( GL_LINES, TANK_NUM_EDGE, GL_UNSIGNED_INT, NULL, 0 );
-    
-    // // landscape
-    // glUniformMatrix4fv(gMVPMatrixLocation, 1, GL_FALSE, &gLandscapeMVPMat);
-    // glDrawElementsBaseVertex( GL_LINES, LANDSCAPE_NUM_EDGE, GL_UNSIGNED_INT, (void*)TANK_EDGE_DATA_SIZE, TANK_NUM_VERTEX / 3);
-    
-    // glUseProgram( 0 );
+    for (int i = 0; i < gNumObjects; ++i) {
+        struct Object * obj = &gObjects[i];
+        glUniformMatrix4fv(gMVPMatrixLocation, 1, GL_FALSE, &obj->mvp);
+        glDrawElementsBaseVertex( GL_LINES, obj->mesh.numIndices, GL_UNSIGNED_INT, (void*)obj->drawinfo.offset, obj->drawinfo.baseVertex );
+    }
+
+    glUseProgram( 0 );
 
     SDL_GL_SwapWindow( gWindow );
 }
 
 void close()
 {
-    free(f3dinfo); // could do this after load?
-    
 	glDeleteProgram( gProgramID );
     
 	SDL_DestroyWindow( gWindow );
@@ -402,7 +565,7 @@ int main(int argc, char *argv[])
         return 0;
     }
     
-    initTank();
+    initMech();
     keys = SDL_GetKeyboardState(NULL);
     
     SDL_Event e;

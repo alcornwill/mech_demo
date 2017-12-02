@@ -26,41 +26,41 @@ bl_info = {
 # format:
 # bytes     type    content
 ################################
-# 4         ushort  num meshes
+# 2         ushort  num meshes
 ################################
-# 4         uchar   name length
+# 1         uchar   name length
 # ~         char    name
-# 4         ushort  num vertices
+# 2         ushort  num vertices
 # ~         fixed   vertex data
-# 4         ushort  num indices
-# ~         fixed   index data
-# 4         ushort  num edges
-# ~         fixed   edge data
-# 4         ushort  num normals
+# 2         ushort  num indices
+# ~         ushort  index data
+# 2         ushort  num edges
+# ~         ushort  edge data
+# 2         ushort  num normals
 # ~         fixed   normal data
-# 4         ushort  num colors
+# 2         ushort  num colors
 # ~         fixed   color data
-# 4         ushort  num uv
+# 2         ushort  num uvs
 # ~         fixed   uv data
 ################################
-# 4         ushort  num objects
+# 2         ushort  num objects
 ################################
-# 4         uchar   name length
+# 2         uchar   name length
 # ~         char    name
-# 4         uchar   mesh name length
+# 2         uchar   mesh name length
 # ~         char    mesh name
-# 4         uchar   parent name length
+# 2         uchar   parent name length
 # ~         char    parent name
-# 4*16      fixed   transform
+# 2*16      fixed   transform
 ################################
-# 4         ushort  num animations
+# 2         ushort  num animations
 ################################
-# 4         uchar   object name length
+# 1         uchar   object name length
 # ~         char    object name
-# 4         ushort  num keys
+# 2         ushort  num keys
 # ~         AKey    animation keys
-#   4       ushort  AKey time
-#   4*16    fixed   AKey transform
+#   2       ushort  AKey time
+#   2*16    fixed   AKey transform
 ################################
 
 

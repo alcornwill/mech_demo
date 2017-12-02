@@ -1,24 +1,18 @@
 
+parenting
 
-loader
-    parse the binary data
-    batch mesh data
-    load object transforms
-    render objects
+load shaders from file
+add color, normal
+static directional light
+static ambient light
+flat shading (gouraud shading)
+
 
 white background
 make mech rotate
 
-need a quaternion lerp
+need a quaternion lerp        
 
-do parenting
-
-do shaders
-    vert shader is same
-    frag shader
-        static directional light
-        static ambient light
-        flat shading (gouraud shading)
 
 exporter
     endianness might be wrong?
