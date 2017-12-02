@@ -11,6 +11,7 @@ void render();
 void close();
 void printProgramLog( GLuint program );
 void printShaderLog( GLuint shader );
+int getShaderSource(char path[], char * shaderSource);
 
 
 struct Mesh {
@@ -54,6 +55,7 @@ struct Object {
     // vec3_t rotation;
     mat4_t model;
     mat4_t mvp;
+    mat4_t normalMatrix;
     struct DrawElementInfo drawinfo;
 };
 

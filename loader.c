@@ -17,7 +17,7 @@ struct File3DInfo * loadFile3D(char path[])
     
     struct File3DInfo *f3dinfo = malloc(sizeof(struct File3DInfo));
     
-    fseek(file, 0, SEEK_SET);
+    //fseek(file, 0, SEEK_SET);
     
     //printf("current file pointer position: %i\n", ftell(file));
     

@@ -11,6 +11,7 @@
 #define F3D_DEBUG
 #include "loader.h"
 
+#define TITLE "Mech Demo"
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
 #define ASPECT_RATIO ((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT)
@@ -28,6 +29,7 @@
 
 unsigned int gNumObjects = 0;
 struct Object * gObjects = NULL;
+struct Object * gRoot = NULL; // root object
 unsigned int gVBOSize = 0;
 unsigned int gIBOSize = 0;
 
@@ -39,6 +41,7 @@ GLint gVertexPos3DLocation = -1;
 GLint gNormalLocation = -1;
 GLint gColorLocation = -1;
 GLint gMVPMatrixLocation = -1;
+GLint gNormalMatrixLocation = -1;
 GLuint gVBO = 0;
 GLuint gIBO = 0;
 GLuint gVAO = 0;
@@ -69,7 +72,7 @@ int init()
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
     
     //Create window
-    gWindow = SDL_CreateWindow( "Tank Demo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
+    gWindow = SDL_CreateWindow( TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
     if( gWindow == NULL )
     {
         printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
@@ -104,17 +107,54 @@ int init()
 	return 1;
 }
 
+int getShaderSource(char path[], char * shaderSource) {
+    FILE * file = fopen(path, "r");
+    if (!file) {
+        printf("ERROR cannot open shader file!\n");
+        return 0;
+    }
+    
+    // not platform independent?
+    fseek(file, 0, SEEK_END);
+    size_t len = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    
+    shaderSource = malloc(len);
+    if (!shaderSource) {
+        printf("ERROR memory allocation failed!\n");
+        return 0;
+    }
+    
+    // todo read in chunks?
+    int idx = 0;
+    while ((shaderSource[idx] = getc(file)) != EOF)
+        ++idx;
+    
+    fclose(file);
+    
+    return 1;
+}
+
 int initGL()
 {
+    // read shader files
+    char * vsSource;
+    char * fsSource;
+    if (!getShaderSource("../shaders/default.vert", vsSource)) {
+        printf("ERROR cannot get vertex shader source\n");
+        return 0;
+    }
+    if (!getShaderSource("../shaders/default.frag", fsSource)) {
+        printf("ERROR cannot get fragment shader source\n");
+        return 0;
+    }
+    
 	gProgramID = glCreateProgram();
     
     // vertex shader
 	GLuint vertexShader = glCreateShader( GL_VERTEX_SHADER );
-	const GLchar* vertexShaderSource[] =
-	{
-		"#version 140\nin vec3 LVertexPos3D;\nuniform mat4 mvp;\n void main() { vec4 pos = vec4(LVertexPos3D, 1);\n pos = mvp * pos;\n gl_Position = pos; }"
-	};
-	glShaderSource( vertexShader, 1, vertexShaderSource, NULL );
+	
+	glShaderSource( vertexShader, 1, vsSource, NULL );
 	glCompileShader( vertexShader );
 
 	// check for errors
@@ -131,11 +171,7 @@ int initGL()
 
     // fragment shader
     GLuint fragmentShader = glCreateShader( GL_FRAGMENT_SHADER );
-    const GLchar* fragmentShaderSource[] =
-    {
-        "#version 140\nout vec4 LFragment; void main() { LFragment = vec4( 1.0, 1.0, 1.0, 1.0 ); }"
-    };
-    glShaderSource( fragmentShader, 1, fragmentShaderSource, NULL );
+    glShaderSource( fragmentShader, 1, fsSource, NULL );
     glCompileShader( fragmentShader );
 
     // check for errors
@@ -188,15 +224,23 @@ int initGL()
     }
     
     //Get model matrix location
-    gMVPMatrixLocation = glGetUniformLocation( gProgramID, "mvp" );
+    gMVPMatrixLocation = glGetUniformLocation( gProgramID, "MVP" );
     if( gMVPMatrixLocation == -1 )
     {
         printf( "mvp is not a valid glsl program variable!\n" );
         return 0;
     }
+    
+    //Get normal matrix location
+    gNormalMatrixLocation = glGetUniformLocation( gProgramID, "NormalMatrix" );
+    if( gNormalMatrixLocation == -1 )
+    {
+        printf( "NormalMatrix is not a valid glsl program variable!\n" );
+        return 0;
+    }
             
     //Initialize clear color
-    glClearColor( 0.f, 0.f, 0.f, 1.f );
+    glClearColor( 1.f, 1.f, 1.f, 1.f );
     
     return 1;
 }
@@ -279,7 +323,7 @@ void setObjectParent(struct Object * obj, struct Object * parent) {
     struct Object * newmem;
     newmem = realloc(parent->children, sizeof(struct Object) * parent->numChildren);
     if (!newmem) {
-        printf("ERROR memory reallocation error!");
+        printf("ERROR memory reallocation error!\n");
     }
     parent->children = newmem;
     
@@ -439,6 +483,15 @@ void load3DFile() {
         // gIBOSize += 2 * mesh.numEdges;
     }
     
+    // find root
+    for (int i = 0; i < gNumObjects; ++i) {
+        struct Object * obj = &gObjects[i];
+        if (!obj->parent) {
+            gRoot = obj;
+            break;
+        }
+    }
+    
     
     f3dFree(f3dinfo);
 }
@@ -452,6 +505,27 @@ void initMech()
     view = m4_mul(view, m4_rotation_x(-M_PI / 2));
     
     pv = m4_mul(proj, view);
+}
+
+void updateObject(struct Object * obj) {
+    // (recursive)
+    
+    // TODO linear interpolation
+    // and sound effect
+    
+    struct AnimKey * key = &obj->anim.keys[pose];
+    if (obj->parent) {
+        obj->model = m4_mul(obj->parent->model, key->transform);
+    } else {
+        obj->model = key->transform;
+    }
+    obj->mvp = m4_mul(pv, obj->model);
+    obj->normalMatrix = m4_invert_affine(m4_transpose(obj->model));
+    
+    for (int i=0; i < obj->numChildren; ++i) {
+        struct Object * child = &obj->children[i];
+        updateObject(child);
+    }
 }
 
 void update(float dt)
@@ -472,18 +546,8 @@ void update(float dt)
     
     int x = 0, y = 0;
     SDL_GetMouseState( &x, &y );
-    
-    // TODO linear interpolation
-    // and sound effect
-    
-    // set model matrix = animation transform
-    for (int i=0; i < gNumObjects; ++i) {
-        struct Object * obj = &gObjects[i];
-        
-        struct AnimKey * key = &obj->anim.keys[pose];
-        obj->model = key->transform;
-        obj->mvp = m4_mul(pv, obj->model);
-    }
+
+    updateObject(gRoot);
 }
 
 void render()
@@ -496,6 +560,7 @@ void render()
     for (int i = 0; i < gNumObjects; ++i) {
         struct Object * obj = &gObjects[i];
         glUniformMatrix4fv(gMVPMatrixLocation, 1, GL_FALSE, &obj->mvp);
+        glUniformMatrix4fv(gNormalMatrixLocation, 1, GL_FALSE, &obj->normalMatrix);
         glDrawElementsBaseVertex( GL_LINES, obj->mesh.numIndices, GL_UNSIGNED_INT, (void*)obj->drawinfo.offset, obj->drawinfo.baseVertex );
     }
 

@@ -1,14 +1,5 @@
 
-parenting
 
-load shaders from file
-add color, normal
-static directional light
-static ambient light
-flat shading (gouraud shading)
-
-
-white background
 make mech rotate
 
 need a quaternion lerp        
