@@ -11,7 +11,6 @@ void render();
 void close();
 void printProgramLog( GLuint program );
 void printShaderLog( GLuint shader );
-int getShaderSource(char path[], char * shaderSource);
 
 
 struct Mesh {

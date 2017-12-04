@@ -5,7 +5,7 @@ CC = gcc
 INCLUDE_PATHS = -Iinclude\SDL2 -Iinclude
 LIBRARY_PATHS = -Llib
 # -w suppresses all warnings
-COMPILER_FLAGS = -w
+COMPILER_FLAGS = -w -g
 # -Wl,-subsystem,windows gets rid of the console window
 #COMPILER_FLAGS += -Wl,-subsystem,windows
 COMPILER_FLAGS += -Dmain=SDL_main

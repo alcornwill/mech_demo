@@ -1,4 +1,38 @@
 
+bug
+    sporadic segmentation faults...
+    so I am writing out of bounds somewhere?
+    
+
+HMM
+    ok vertex colors won't work
+    because they're per-face
+    we would need to split the mesh
+    by colors, which is unpleasant
+    
+    it would be better if
+    we used materials instead (lol)
+    then it would be easier
+    to split by material
+    
+    however
+    there's a few things
+    we need to implement first
+    
+    * multiple mesh per object
+    * materials (MaterialInfo, Material)
+        normally a material
+        might specify a shader
+        but to make it easier
+        just do diffuse color
+    * export matrials
+    * import materials
+    * MeshInfo has material name
+    * Mesh has a Material
+    * (export vertex colors properly)
+    
+
+python script to convert shader to embeddable C header?
 
 make mech rotate
 
@@ -14,3 +48,46 @@ experiment
     round floats to look like PS1 floating point precision errors
     
     
+    
+int getShaderSource(char path[], GLint *shaderLen, char * shaderSource) {
+    FILE * file = fopen(path, "r");
+    if (!file) {
+        printf("ERROR cannot open shader file!\n");
+        return 0;
+    }
+    
+    // not platform independent?
+    fseek(file, 0, SEEK_END);
+    *shaderLen = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    
+    shaderSource = malloc(*shaderLen);
+    if (!shaderSource) {
+        printf("ERROR memory allocation failed!\n");
+        return 0;
+    }
+    
+    // todo read in chunks?
+    int idx = 0;
+    while ((shaderSource[idx] = getc(file)) != EOF)
+        ++idx;
+    
+    fclose(file);
+    
+    return 1;
+}
+
+...
+
+GLint vsLen = 0;
+GLint fsLen = 0;
+char * vsSource;
+char * fsSource;
+if (!getShaderSource("../shaders/default.vert", &vsLen, vsSource)) {
+    printf("ERROR cannot get vertex shader source\n");
+    return 0;
+}
+if (!getShaderSource("../shaders/default.frag", &fsLen, fsSource)) {
+    printf("ERROR cannot get fragment shader source\n");
+    return 0;
+}

@@ -39,7 +39,7 @@ SDL_GLContext gContext;
 GLuint gProgramID = 0;
 GLint gVertexPos3DLocation = -1;
 GLint gNormalLocation = -1;
-GLint gColorLocation = -1;
+//GLint gColorLocation = -1;
 GLint gMVPMatrixLocation = -1;
 GLint gNormalMatrixLocation = -1;
 GLuint gVBO = 0;
@@ -102,59 +102,76 @@ int init()
         return 0;
     }
     
-    initBuffers();
-
 	return 1;
-}
-
-int getShaderSource(char path[], char * shaderSource) {
-    FILE * file = fopen(path, "r");
-    if (!file) {
-        printf("ERROR cannot open shader file!\n");
-        return 0;
-    }
-    
-    // not platform independent?
-    fseek(file, 0, SEEK_END);
-    size_t len = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    
-    shaderSource = malloc(len);
-    if (!shaderSource) {
-        printf("ERROR memory allocation failed!\n");
-        return 0;
-    }
-    
-    // todo read in chunks?
-    int idx = 0;
-    while ((shaderSource[idx] = getc(file)) != EOF)
-        ++idx;
-    
-    fclose(file);
-    
-    return 1;
 }
 
 int initGL()
 {
-    // read shader files
-    char * vsSource;
-    char * fsSource;
-    if (!getShaderSource("../shaders/default.vert", vsSource)) {
-        printf("ERROR cannot get vertex shader source\n");
-        return 0;
-    }
-    if (!getShaderSource("../shaders/default.frag", fsSource)) {
-        printf("ERROR cannot get fragment shader source\n");
-        return 0;
-    }
+    const GLchar * vsSource = "\
+#version 330\n\
+\n\
+//#define USE_VERTEX_COLORS\n\
+//#define UNLIT\n\
+\n\
+const vec3 ambient = vec3(0.1f, 0.1f, 0.1f);\n\
+const vec3 dlight = vec3(0.03f, 0.98f, 0.08f); // direction\n\
+\n\
+in vec3 position;\n\
+in vec3 normal;\n\
+in vec3 color;\n\
+//in vec2 uv;\n\
+\n\
+out vec4 Color;\n\
+\n\
+uniform mat4 MVP;\n\
+uniform mat3 NormalMatrix;\n\
+\n\
+void directional_light(vec3 surface_normal, inout vec3 scatteredLight)\n\
+{\n\
+    vec3 direction = normalize(dlight);\n\
+    float diffuse = max(0.0, dot(surface_normal, direction));\n\
+	scatteredLight += diffuse;\n\
+}\n\
+\n\
+void main()\n\
+{\n\
+    vec4 v_pos = vec4(position, 1.0f);\n\
+	gl_Position = MVP * v_pos;\n\
+\n\
+	vec3 col = vec3(1.0f, 1.0f, 1.0f);\n\
+	#ifdef USE_VERTEX_COLORS\n\
+	col *= color;\n\
+	#endif\n\
+\n\
+    #ifndef UNLIT\n\
+	vec3 scatteredLight = ambient;\n\
+	vec3 surface_normal = normalize(NormalMatrix * normal);\n\
+	directional_light(surface_normal, scatteredLight);\n\
+    col *= scatteredLight;\n\
+    #endif\n\
+\n\
+    // note this value is unsaturated, we would saturate with min(color, vec4(1.0)\n\
+	Color = vec4(col, 1.0f);\n\
+}";
+
+    const GLchar * fsSource = "\
+#version 330\n\
+\n\
+in vec4 Color;\n\
+out vec4 outputColor;\n\
+\n\
+void main()\n\
+{\n\
+    vec4 outColor = Color;\n\
+    outputColor = outColor;\n\
+}";
+
     
 	gProgramID = glCreateProgram();
     
     // vertex shader
 	GLuint vertexShader = glCreateShader( GL_VERTEX_SHADER );
-	
-	glShaderSource( vertexShader, 1, vsSource, NULL );
+    glShaderSource( vertexShader, 1, &vsSource, NULL );
 	glCompileShader( vertexShader );
 
 	// check for errors
@@ -171,7 +188,7 @@ int initGL()
 
     // fragment shader
     GLuint fragmentShader = glCreateShader( GL_FRAGMENT_SHADER );
-    glShaderSource( fragmentShader, 1, fsSource, NULL );
+    glShaderSource( fragmentShader, 1, &fsSource, NULL);
     glCompileShader( fragmentShader );
 
     // check for errors
@@ -200,10 +217,10 @@ int initGL()
     }
         
     //Get vertex attribute location
-    gVertexPos3DLocation = glGetAttribLocation( gProgramID, "LVertexPos3D" );
+    gVertexPos3DLocation = glGetAttribLocation( gProgramID, "position" );
     if( gVertexPos3DLocation == -1 )
     {
-        printf( "LVertexPos3D is not a valid glsl program variable!\n" );
+        printf( "position is not a valid glsl program variable!\n" );
         return 0;
     }
     
@@ -215,13 +232,13 @@ int initGL()
         return 0;
     }
     
-    // color
-    gColorLocation = glGetAttribLocation( gProgramID, "color" );
-    if( gColorLocation == -1 )
-    {
-        printf( "color is not a valid glsl program variable!\n" );
-        return 0;
-    }
+    // // color
+    // gColorLocation = glGetAttribLocation( gProgramID, "color" );
+    // if( gColorLocation == -1 )
+    // {
+        // printf( "color is not a valid glsl program variable!\n" );
+        // return 0;
+    // }
     
     //Get model matrix location
     gMVPMatrixLocation = glGetUniformLocation( gProgramID, "MVP" );
@@ -283,16 +300,17 @@ void initBuffers() {
         vboOffset += size;
     }
     
-    // color data
-    glEnableVertexAttribArray( gColorLocation );
-    glVertexAttribPointer( gColorLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void *)vboOffset );
+    // // color data
+    // glEnableVertexAttribArray( gColorLocation );
+    // glVertexAttribPointer( gColorLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void *)vboOffset );
     
-    for (int i = 0; i < gNumObjects; ++i) {
-        struct Object *obj = &gObjects[i];
-        size_t size = obj->mesh.numColors * 4 * 3;
-        glBufferSubData( GL_ARRAY_BUFFER, vboOffset, size, obj->mesh.colors);
-        vboOffset += size;
-    }
+    // for (int i = 0; i < gNumObjects; ++i) {
+        // struct Object *obj = &gObjects[i];
+        // size_t size = obj->mesh.numColors * 4 * 3;
+        // glBufferSubData( GL_ARRAY_BUFFER, vboOffset, size, obj->mesh.colors);
+        // vboOffset += size;
+    // }
+    
     // TODO UVs (if present)
     
     
@@ -345,7 +363,7 @@ void load3DFile() {
         struct Object * obj = &gObjects[i];
         obj->parent = NULL;
         obj->children = NULL;
-        // TODO copy the name
+        // copy name
         obj->name = malloc(objinfo->nameLen);
         memcpy(obj->name, objinfo->name, objinfo->nameLen);
         
@@ -397,26 +415,38 @@ void load3DFile() {
                 
                 // copy vertices
                 obj->mesh.vertices = malloc(4 * 3 * obj->mesh.numVertices);
-                for (int k = 0; k < obj->mesh.numVertices; ++k) {
+                for (int k = 0; k < 3 * obj->mesh.numVertices; ++k) {
                     obj->mesh.vertices[k] = FIXED(meshinfo->vertices[k]);
                 }
                 
                 // copy normals
-                obj->mesh.normals = malloc(4 * 3 * obj->mesh.numNormals);
-                for (int k = 0; k < obj->mesh.numNormals; ++k) {
-                    obj->mesh.normals[k] = FIXED(meshinfo->normals[k]);
+                if (obj->mesh.numNormals) {
+                    obj->mesh.normals = malloc(4 * 3 * obj->mesh.numNormals);
+                    for (int k = 0; k < 3 * obj->mesh.numNormals; ++k) {
+                        obj->mesh.normals[k] = FIXED(meshinfo->normals[k]);
+                    }
+                } else {
+                    obj->mesh.normals = NULL;
                 }
                 
                 // copy colors
-                obj->mesh.colors = malloc(4 * 3 * obj->mesh.numColors);
-                for (int k = 0; k < obj->mesh.numColors; ++k) {
-                    obj->mesh.colors[k] = FIXED(meshinfo->colors[k]);
+                if (obj->mesh.numColors) {
+                    obj->mesh.colors = malloc(4 * 3 * obj->mesh.numColors);
+                    for (int k = 0; k < 3 * obj->mesh.numColors; ++k) {
+                        obj->mesh.colors[k] = FIXED(meshinfo->colors[k]);
+                    }
+                } else {
+                    obj->mesh.colors = NULL;
                 }
                 
                 // copy uvs
-                obj->mesh.uvs = malloc(4 * 3 * obj->mesh.numUVs);
-                for (int k = 0; k < obj->mesh.numUVs; ++k) {
-                    obj->mesh.uvs[k] = FIXED(meshinfo->uvs[k]);
+                if (obj->mesh.numUVs) {
+                    obj->mesh.uvs = malloc(4 * 3 * obj->mesh.numUVs);
+                    for (int k = 0; k < 2 * obj->mesh.numUVs; ++k) {
+                        obj->mesh.uvs[k] = FIXED(meshinfo->uvs[k]);
+                    }
+                } else {
+                    obj->mesh.uvs = NULL;
                 }
                 
                 // TODO we will need useEdges somewhere?
@@ -508,6 +538,7 @@ void initMech()
 }
 
 void updateObject(struct Object * obj) {
+    printf("updating object \"%s\"", obj->name);
     // (recursive)
     
     // TODO linear interpolation
@@ -519,6 +550,7 @@ void updateObject(struct Object * obj) {
     } else {
         obj->model = key->transform;
     }
+    
     obj->mvp = m4_mul(pv, obj->model);
     obj->normalMatrix = m4_invert_affine(m4_transpose(obj->model));
     
@@ -629,7 +661,8 @@ int main(int argc, char *argv[])
         close();
         return 0;
     }
-    
+    load3DFile();
+    initBuffers();
     initMech();
     keys = SDL_GetKeyboardState(NULL);
     

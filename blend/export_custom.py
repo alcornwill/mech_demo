@@ -96,6 +96,10 @@ def write_length(data):
     # write the length of an iterable
     l = pack('H', len(data))
     out.write(l)
+    
+def write_zero(fmt):
+    l = pack(fmt, 0)
+    out.write(l)
             
 def write_array(data):
     # write number of elements
@@ -146,22 +150,33 @@ def write_mesh(obj, use_indices, use_edges, use_normals, use_colors, use_uvs):
         mesh_triangulate(data) # doesn't export quads/ngons
         indices = [list(poly.vertices) for poly in data.polygons]
         write_array(indices)
+    else:
+        write_zero('H')
     
     if use_edges:
         edges = [list(edge.vertices) for edge in data.edges]
         write_array(edges)
+    else:
+        write_zero('H')
     
     if use_normals:
         normals = [list(vert.normal) for vert in data.vertices]
         write_array(normals)
+    else:
+        write_zero('h')
 
     if use_colors:
         colors = [list(color.color) for color in data.vertex_colors[0].data]
         write_array(colors)
+    else:
+        write_zero('h')
     
     if use_uvs:    
         uvs = [list(uv.uv) for uv in data.uv_layers[0].data]
         write_array(uvs)
+    else:
+        write_zero('h')
+        
             
 def write_obj(obj):
 

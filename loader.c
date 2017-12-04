@@ -9,6 +9,7 @@ struct File3DInfo * loadFile3D(char path[])
     // load binary file at path
     // parse bytes...
     
+    printf("reading 3d file \"%s\"\n", path);
     FILE* file = fopen(path, "rb");
     if (!file) {
         printf("ERROR failed to open file!\n");
@@ -16,6 +17,8 @@ struct File3DInfo * loadFile3D(char path[])
     }
     
     struct File3DInfo *f3dinfo = malloc(sizeof(struct File3DInfo));
+    if (!f3dinfo)
+        printf("ERROR memory allocation error");
     
     //fseek(file, 0, SEEK_SET);
     
@@ -24,85 +27,115 @@ struct File3DInfo * loadFile3D(char path[])
     // number of meshes
     if (!fread(&f3dinfo->numMeshes, 2, 1, file))
         printf("ERROR file read error!\n");
-    #ifdef F3D_DEBUG
-    printf("num meshes: %u\n", f3dinfo->numMeshes);
-    #endif
+    printf("num meshes: %i\n", f3dinfo->numMeshes);
     
     // meshes
     for (int i = 0; i < f3dinfo->numMeshes; ++i) {
         struct MeshInfo * meshinfo = malloc(sizeof(struct MeshInfo));
+        if (!meshinfo)
+            printf("ERROR memory allocation error\n");
         
         // name length
         if (!fread(&meshinfo->nameLen, 1, 1, file))
             printf("ERROR file read error!\n");
+        printf("name length: %i\n", meshinfo->nameLen);
         
         // name
-        meshinfo->name = malloc(1 * meshinfo->nameLen);
+        meshinfo->name = malloc(meshinfo->nameLen);
+        if (!meshinfo->name)
+            printf("ERROR memory allocation error");
+        
         if (!fread(&meshinfo->name, 1, meshinfo->nameLen, file))
             printf("ERROR file read error!\n");
+        printf("mesh name: \"%.*s\"\n", meshinfo->nameLen, &meshinfo->name);
         
         // num vertex
         if (!fread(&meshinfo->numVertices, 2, 1, file))
             printf("ERROR file read error!\n");
+        printf("num vertices: %i\n", meshinfo->numVertices);
         
         // vertices
         meshinfo->vertices = malloc(2 * 3 * meshinfo->numVertices);
-        if (!fread(&meshinfo->vertices, 2, meshinfo->numVertices, file))
+        if (!meshinfo->vertices)
+            printf("ERROR memory allocation error\n");
+        
+        if (!fread(&meshinfo->vertices, 2 * 3, meshinfo->numVertices, file))
             printf("ERROR file read error!\n");
+        printf("read vertices\n");
         
         // num index
         if (!fread(&meshinfo->numIndices, 2, 1, file))
             printf("ERROR file read error!\n");
+        printf("num indices: %i\n", meshinfo->numIndices);
         
         // indices
         if (meshinfo->numIndices) {
             meshinfo->indices = malloc(2 * 3 * meshinfo->numIndices);
-            if (!fread(&meshinfo->indices, 2, meshinfo->numIndices, file))
+            if (!meshinfo->indices)
+                printf("ERROR memory allocation error\n");
+            if (!fread(&meshinfo->indices, 2 * 3, meshinfo->numIndices, file))
                 printf("ERROR file read error!\n");
+            printf("read indices\n");
         }
         
         // num edge
         if (!fread(&meshinfo->numEdges, 2, 1, file))
             printf("ERROR file read error!\n");
+        printf("num edges: %i\n", meshinfo->numEdges);
         
         // edges
         if (meshinfo->numEdges) {
             meshinfo->edges = malloc(2 * 2 * meshinfo->numEdges);
-            if (!fread(&meshinfo->edges, 2, meshinfo->numEdges, file))
+            if (!meshinfo->edges)
+                printf("ERROR memory allocation error\n");
+            if (!fread(&meshinfo->edges, 2 * 2, meshinfo->numEdges, file))
                 printf("ERROR file read error!\n");
+            printf("read edges\n");
         }
         
         // num normals
         if (!fread(&meshinfo->numNormals, 2, 1, file))
             printf("ERROR file read error!\n");
+        printf("num normals: %i\n", meshinfo->numNormals);
         
         // normals
         if (meshinfo->numNormals) {
             meshinfo->normals = malloc(2 * 3 * meshinfo->numNormals);
-            if (!fread(&meshinfo->normals, 2, meshinfo->numNormals, file))
+            if (!meshinfo->normals)
+                printf("ERROR memory allocation error\n");
+            if (!fread(&meshinfo->normals, 2 * 3, meshinfo->numNormals, file))
                 printf("ERROR file read error!\n");
+            printf("read normals\n");
         }
         
         // num colors
         if (!fread(&meshinfo->numColors, 2, 1, file))
             printf("ERROR file read error!\n");
+        printf("num colors: %i\n", meshinfo->numColors);
         
         // colors
         if (meshinfo->numColors) {
             meshinfo->colors = malloc(2 * 3 * meshinfo->numColors);
-            if (!fread(&meshinfo->colors, 2, meshinfo->numColors, file))
+            if (!meshinfo->colors)
+                printf("ERROR memory allocation error\n");
+            if (!fread(&meshinfo->colors, 2 * 3, meshinfo->numColors, file))
                 printf("ERROR file read error!\n");
+            printf("read colors\n");
         }
         
         // num uvs
         if (!fread(&meshinfo->numUVs, 2, 1, file))
             printf("ERROR file read error!\n");
+        printf("num uvs: %i\n", meshinfo->numUVs);
         
         // uvs
         if (meshinfo->numUVs) {
             meshinfo->uvs = malloc(2 * 2 * meshinfo->numUVs);
-            if (!fread(&meshinfo->uvs, 2, meshinfo->numUVs, file))
+            if (!meshinfo->uvs)
+                printf("ERROR memory allocation error");
+            if (!fread(&meshinfo->uvs, 2 * 2, meshinfo->numUVs, file))
                 printf("ERROR file read error!\n");
+            printf("read uvs\n");
         }
     }
     
