@@ -12,8 +12,19 @@ void close();
 void printProgramLog( GLuint program );
 void printShaderLog( GLuint shader );
 
+struct DrawElementInfo {
+    unsigned int offset; // start of indices
+    unsigned int baseVertex; // number of preceding vertices
+};
 
-struct Mesh {
+struct Material {
+    char * name;
+    short color[3];
+};
+
+struct Geom {
+    struct Material * mat;
+    struct DrawElementInfo drawinfo;
     float *vertices; // note: fixed point values
     unsigned short *indices;
     unsigned short *edges;
@@ -28,6 +39,11 @@ struct Mesh {
     unsigned short numUVs;
 };
 
+struct Mesh {
+    unsigned char numGeoms;
+    struct Geom * geoms;
+};
+
 struct AnimKey {
     unsigned short time;
     mat4_t transform;
@@ -38,10 +54,7 @@ struct Anim {
     unsigned short numKeys;
 };
 
-struct DrawElementInfo {
-    unsigned int offset; // start of indices
-    unsigned int baseVertex; // number of preceding vertices
-};
+
 
 struct Object {
     char * name;
@@ -55,7 +68,6 @@ struct Object {
     mat4_t model;
     mat4_t mvp;
     mat4_t normalMatrix;
-    struct DrawElementInfo drawinfo;
 };
 
 void setObjectParent(struct Object * obj, struct Object * parent);

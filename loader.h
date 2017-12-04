@@ -1,10 +1,10 @@
 
 // File3D - F3D
 
-
-struct MeshInfo {
-    unsigned char nameLen;
-    char * name;
+struct GeomInfo {
+    // a Geom contains mesh data (also has a material)
+    unsigned char matNameLen;
+    char * matName;
     short *vertices; // note: fixed point values
     unsigned short *indices;
     unsigned short *edges;
@@ -17,6 +17,21 @@ struct MeshInfo {
     unsigned short numNormals;
     unsigned short numColors;
     unsigned short numUVs;
+};
+
+struct MeshInfo {
+    // a mesh contains multiple Geoms
+    unsigned char nameLen;
+    char * name;
+    unsigned char numGeoms;
+    struct GeomInfo * geoms;
+};
+
+struct MaterialInfo {
+    unsigned char nameLen;
+    char * name;
+    // only stores diffuse color for now
+    short color[3];
 };
 
 struct ObjectInfo {
@@ -37,8 +52,8 @@ struct AnimKeyInfo {
 };
 
 struct AnimInfo {
-    unsigned char objectNameLen;
-    char * objectName;
+    unsigned char nameLen;
+    char * name;
     struct AnimKeyInfo * keys;
     unsigned short numKeys;
 };
@@ -46,6 +61,8 @@ struct AnimInfo {
 struct File3DInfo {
     unsigned short numMeshes;
     struct MeshInfo * meshes;
+    unsigned short numMats;
+    struct MaterialInfo * mats;
     unsigned short numObjects;
     struct ObjectInfo * objects;
     unsigned short numAnims;

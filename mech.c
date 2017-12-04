@@ -27,7 +27,9 @@
 
 #define FIXED(f) (f / 1000)
 
+unsigned int gNumMats = 0;
 unsigned int gNumObjects = 0;
+struct Material * gMats = NULL;
 struct Object * gObjects = NULL;
 struct Object * gRoot = NULL; // root object
 unsigned int gVBOSize = 0;
@@ -42,6 +44,7 @@ GLint gNormalLocation = -1;
 //GLint gColorLocation = -1;
 GLint gMVPMatrixLocation = -1;
 GLint gNormalMatrixLocation = -1;
+GLint gDiffuseColorLocation = -1;
 GLuint gVBO = 0;
 GLuint gIBO = 0;
 GLuint gVAO = 0;
@@ -125,6 +128,7 @@ out vec4 Color;\n\
 \n\
 uniform mat4 MVP;\n\
 uniform mat3 NormalMatrix;\n\
+uniform vec3 DiffuseColor;\n\
 \n\
 void directional_light(vec3 surface_normal, inout vec3 scatteredLight)\n\
 {\n\
@@ -138,7 +142,7 @@ void main()\n\
     vec4 v_pos = vec4(position, 1.0f);\n\
 	gl_Position = MVP * v_pos;\n\
 \n\
-	vec3 col = vec3(1.0f, 1.0f, 1.0f);\n\
+	vec3 col = DiffuseColor;\n\
 	#ifdef USE_VERTEX_COLORS\n\
 	col *= color;\n\
 	#endif\n\
@@ -255,6 +259,14 @@ void main()\n\
         printf( "NormalMatrix is not a valid glsl program variable!\n" );
         return 0;
     }
+    
+    //Get diffuse color location
+    gDiffuseColorLocation = glGetUniformLocation( gProgramID, "DiffuseColor" );
+    if( gDiffuseColorLocation == -1 )
+    {
+        printf( "DiffuseColor is not a valid glsl program variable!\n" );
+        return 0;
+    }
             
     //Initialize clear color
     glClearColor( 1.f, 1.f, 1.f, 1.f );
@@ -282,11 +294,14 @@ void initBuffers() {
     
     for (int i = 0; i < gNumObjects; ++i) {
         struct Object *obj = &gObjects[i];
-        size_t size = obj->mesh.numVertices * 4 * 3;
-        glBufferSubData( GL_ARRAY_BUFFER, vboOffset, size, obj->mesh.vertices);
-        vboOffset += size;
-        obj->drawinfo.baseVertex = baseVertex;
-        baseVertex += obj->mesh.numVertices;
+        for (int j=0; j < obj->mesh.numGeoms; ++j) {
+            struct Geom * geom = &obj->mesh.geoms[j];
+            size_t size = geom->numVertices * 4 * 3;
+            glBufferSubData( GL_ARRAY_BUFFER, vboOffset, size, geom->vertices);
+            vboOffset += size;
+            geom->drawinfo.baseVertex = baseVertex;
+            baseVertex += geom->numVertices;
+        }
     }
     
     // normal data
@@ -295,9 +310,12 @@ void initBuffers() {
     
     for (int i = 0; i < gNumObjects; ++i) {
         struct Object *obj = &gObjects[i];
-        size_t size = obj->mesh.numNormals * 4 * 3;
-        glBufferSubData( GL_ARRAY_BUFFER, vboOffset, size, obj->mesh.normals);
-        vboOffset += size;
+        for (int j=0; j < obj->mesh.numGeoms; ++j) {
+            struct Geom * geom = &obj->mesh.geoms[j];
+            size_t size = geom->numNormals * 4 * 3;
+            glBufferSubData( GL_ARRAY_BUFFER, vboOffset, size, geom->normals);
+            vboOffset += size;
+        }
     }
     
     // // color data
@@ -323,10 +341,13 @@ void initBuffers() {
     
     for (int i = 0; i < gNumObjects; ++i) {
         struct Object *obj = &gObjects[i];
-        size_t size = obj->mesh.numIndices * 4;
-        glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, iboOffset, size, obj->mesh.indices);
-        obj->drawinfo.offset = iboOffset;
-        iboOffset += size;
+        for (int j=0; j < obj->mesh.numGeoms; ++j) {
+            struct Geom * geom = &obj->mesh.geoms[j];
+            size_t size = geom->numIndices * 4;
+            glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, iboOffset, size, geom->indices);
+            geom->drawinfo.offset = iboOffset;
+            iboOffset += size;
+        }
     }
     // TODO edges if present
 
@@ -352,7 +373,28 @@ void setObjectParent(struct Object * obj, struct Object * parent) {
 void load3DFile() {
         
     struct File3DInfo * f3dinfo = loadFile3D("../mech.3d");
-
+    
+    // first process all materials
+    gMats = malloc(sizeof(struct Material) * f3dinfo->numMats);
+    
+    // for each material
+    for (int i=0; i < f3dinfo->numMats; ++i) {
+        struct MaterialInfo * matinfo = &f3dinfo->mats[i];
+        
+        // create new material
+        struct Material * mat = &gMats[i];
+        
+        mat->name = malloc(matinfo->nameLen);
+        if (!mat->name) {
+            printf("ERROR memory allocation error");
+        }
+        
+        mat->color[0] = FIXED(matinfo->color[0]);
+        mat->color[1] = FIXED(matinfo->color[1]);
+        mat->color[2] = FIXED(matinfo->color[2]);
+    }
+    
+    
     gObjects = malloc(sizeof(struct Object) * f3dinfo->numObjects);
     
     // for each object in f3dinfo
@@ -381,85 +423,110 @@ void load3DFile() {
         // find mesh with name objinfo->meshName
         for (int j=0; j < f3dinfo->numMeshes; ++j) {
             struct MeshInfo * meshinfo = &f3dinfo->meshes[j];
+            obj->mesh.numGeoms = meshinfo->numGeoms;
+            if (!obj->mesh.numGeoms) {
+                printf("ERROR no geoms... wierd\n");
+            }
+            obj->mesh.geoms = malloc(obj->mesh.numGeoms * sizeof(struct Geom));
+            if (!obj->mesh.geoms) {
+                printf("ERROR memory allocation error\n");
+            }
+            
             if (strcmp(meshinfo->name, objinfo->meshName)) {
                 // copy data
-                obj->mesh.numVertices = meshinfo->numVertices;
-                obj->mesh.numIndices = meshinfo->numIndices;
-                obj->mesh.numEdges = meshinfo->numEdges;
-                obj->mesh.numNormals = meshinfo->numNormals;
-                obj->mesh.numColors = meshinfo->numColors;
-                obj->mesh.numUVs = meshinfo->numUVs;
-                
-                // we can just copy the index and edge data
-                if (obj->mesh.numIndices) {
-                    size_t size = 2 * 3 * obj->mesh.numIndices;
-                    obj->mesh.indices = malloc(size);
-                    memcpy(obj->mesh.indices, meshinfo->indices, size);
-                } else {
-                    obj->mesh.indices = NULL;
-                }
-                
-                // copy edges
-                if (obj->mesh.numEdges) {
-                    size_t size = 2 * 2 * obj->mesh.numEdges;
-                    obj->mesh.edges = malloc(size);
-                    memcpy(obj->mesh.edges, meshinfo->edges, size);
-                } else {
-                    obj->mesh.edges = NULL;
-                }
-                
-                // NOW
-                // we have to divide every single float
-                // by 1000
-                // because I decided to store as fixed-point...
-                
-                // copy vertices
-                obj->mesh.vertices = malloc(4 * 3 * obj->mesh.numVertices);
-                for (int k = 0; k < 3 * obj->mesh.numVertices; ++k) {
-                    obj->mesh.vertices[k] = FIXED(meshinfo->vertices[k]);
-                }
-                
-                // copy normals
-                if (obj->mesh.numNormals) {
-                    obj->mesh.normals = malloc(4 * 3 * obj->mesh.numNormals);
-                    for (int k = 0; k < 3 * obj->mesh.numNormals; ++k) {
-                        obj->mesh.normals[k] = FIXED(meshinfo->normals[k]);
+            
+                for (int n=0; n < obj->mesh.numGeoms; ++n) {
+                    struct GeomInfo * geominfo = &meshinfo->geoms[n];
+                    struct Geom * geom = &obj->mesh.geoms[n];
+                    
+                    // find material with name geom->matName
+                    for (int m=0; m < gNumMats; ++m) {
+                        struct Material * mat = &gMats[m];
+                        
+                        if (strcmp(geominfo->matName, mat->name)) {
+                            geom->mat = mat;
+                            break;
+                        }
                     }
-                } else {
-                    obj->mesh.normals = NULL;
-                }
                 
-                // copy colors
-                if (obj->mesh.numColors) {
-                    obj->mesh.colors = malloc(4 * 3 * obj->mesh.numColors);
-                    for (int k = 0; k < 3 * obj->mesh.numColors; ++k) {
-                        obj->mesh.colors[k] = FIXED(meshinfo->colors[k]);
+                    geom->numVertices = geominfo->numVertices;
+                    geom->numIndices = geominfo->numIndices;
+                    geom->numEdges = geominfo->numEdges;
+                    geom->numNormals = geominfo->numNormals;
+                    geom->numColors = geominfo->numColors;
+                    geom->numUVs = geominfo->numUVs;
+                    
+                    // we can just copy the index and edge data
+                    if (geom->numIndices) {
+                        size_t size = 2 * 3 * geom->numIndices;
+                        geom->indices = malloc(size);
+                        memcpy(geom->indices, geominfo->indices, size);
+                    } else {
+                        geom->indices = NULL;
                     }
-                } else {
-                    obj->mesh.colors = NULL;
-                }
-                
-                // copy uvs
-                if (obj->mesh.numUVs) {
-                    obj->mesh.uvs = malloc(4 * 3 * obj->mesh.numUVs);
-                    for (int k = 0; k < 2 * obj->mesh.numUVs; ++k) {
-                        obj->mesh.uvs[k] = FIXED(meshinfo->uvs[k]);
+                    
+                    // copy edges
+                    if (geom->numEdges) {
+                        size_t size = 2 * 2 * geom->numEdges;
+                        geom->edges = malloc(size);
+                        memcpy(geom->edges, geominfo->edges, size);
+                    } else {
+                        geom->edges = NULL;
                     }
-                } else {
-                    obj->mesh.uvs = NULL;
+                    
+                    // NOW
+                    // we have to divide every single float
+                    // by 1000
+                    // because I decided to store as fixed-point...
+                    
+                    // copy vertices
+                    geom->vertices = malloc(4 * 3 * geom->numVertices);
+                    for (int k = 0; k < 3 * geom->numVertices; ++k) {
+                        geom->vertices[k] = FIXED(geominfo->vertices[k]);
+                    }
+                    
+                    // copy normals
+                    if (geom->numNormals) {
+                        geom->normals = malloc(4 * 3 * geom->numNormals);
+                        for (int k = 0; k < 3 * geom->numNormals; ++k) {
+                            geom->normals[k] = FIXED(geominfo->normals[k]);
+                        }
+                    } else {
+                        geom->normals = NULL;
+                    }
+                    
+                    // copy colors
+                    if (geom->numColors) {
+                        geom->colors = malloc(4 * 3 * geom->numColors);
+                        for (int k = 0; k < 3 * geom->numColors; ++k) {
+                            geom->colors[k] = FIXED(geominfo->colors[k]);
+                        }
+                    } else {
+                        geom->colors = NULL;
+                    }
+                    
+                    // copy uvs
+                    if (geom->numUVs) {
+                        geom->uvs = malloc(4 * 3 * geom->numUVs);
+                        for (int k = 0; k < 2 * geom->numUVs; ++k) {
+                            geom->uvs[k] = FIXED(geominfo->uvs[k]);
+                        }
+                    } else {
+                        geom->uvs = NULL;
+                    }
+                    
+                    // TODO we will need useEdges somewhere?
+                    // storing the attributes used is useful anyway
+                    
+                    break;
                 }
-                
-                // TODO we will need useEdges somewhere?
-                // storing the attributes used is useful anyway
-                
-                break;
             }
         }
         
         // find anim with name objinfo->animName
         for (int j=0; j < f3dinfo->numAnims; ++j) {
             struct AnimInfo * animinfo = &f3dinfo->anims[j];
-            if (strcmp(animinfo->objectName, objinfo->animName)) {
+            if (strcmp(animinfo->name, objinfo->animName)) {
                 // copy keys
                 obj->anim.numKeys = animinfo->numKeys;
                 obj->anim.keys = malloc(sizeof(struct AnimKey) * obj->anim.numKeys);
@@ -504,13 +571,17 @@ void load3DFile() {
     for (int i = 0; i < gNumObjects; ++i) {
         struct Mesh * mesh = &gObjects[i].mesh;
         
-        gVBOSize += 4 * 3 * mesh->numVertices;
-        gVBOSize += 4 * 3 * mesh->numNormals;
-        gVBOSize += 4 * 3 * mesh->numColors;
-        gVBOSize += 4 * 2 * mesh->numUVs;
-        
-        gIBOSize += 3 * mesh->numIndices;
-        // gIBOSize += 2 * mesh.numEdges;
+        for (int i = 0; i < mesh->numGeoms; ++i) {
+            struct Geom * geom = &mesh->geoms[i];
+            
+            gVBOSize += 4 * 3 * geom->numVertices;
+            gVBOSize += 4 * 3 * geom->numNormals;
+            gVBOSize += 4 * 3 * geom->numColors;
+            gVBOSize += 4 * 2 * geom->numUVs;
+            
+            gIBOSize += 3 * geom->numIndices;
+            // gIBOSize += 2 * geom.numEdges;
+        }
     }
     
     // find root
@@ -593,7 +664,12 @@ void render()
         struct Object * obj = &gObjects[i];
         glUniformMatrix4fv(gMVPMatrixLocation, 1, GL_FALSE, &obj->mvp);
         glUniformMatrix4fv(gNormalMatrixLocation, 1, GL_FALSE, &obj->normalMatrix);
-        glDrawElementsBaseVertex( GL_LINES, obj->mesh.numIndices, GL_UNSIGNED_INT, (void*)obj->drawinfo.offset, obj->drawinfo.baseVertex );
+        for (int j = 0; j < obj->mesh.numGeoms; ++j){
+            struct Geom * geom = &obj->mesh.geoms[j];
+            glUniform3f(gDiffuseColorLocation, geom->mat->color[0], geom->mat->color[1], geom->mat->color[2]);
+            // NOTE this is not optimal anymore because not sorted by material! (lol)
+            glDrawElementsBaseVertex( GL_LINES, geom->numIndices, GL_UNSIGNED_INT, (void*)geom->drawinfo.offset, geom->drawinfo.baseVertex );
+        }
     }
 
     glUseProgram( 0 );

@@ -49,94 +49,143 @@ struct File3DInfo * loadFile3D(char path[])
             printf("ERROR file read error!\n");
         printf("mesh name: \"%.*s\"\n", meshinfo->nameLen, &meshinfo->name);
         
-        // num vertex
-        if (!fread(&meshinfo->numVertices, 2, 1, file))
+        // num geoms
+        if (!fread(&meshinfo->numGeoms, 1, 1, file))
             printf("ERROR file read error!\n");
-        printf("num vertices: %i\n", meshinfo->numVertices);
+        printf("num geoms: %i\n", meshinfo->numGeoms);
         
-        // vertices
-        meshinfo->vertices = malloc(2 * 3 * meshinfo->numVertices);
-        if (!meshinfo->vertices)
+        meshinfo->geoms = malloc(meshinfo->numGeoms * sizeof(struct GeomInfo));
+        if (!meshinfo->geoms) {
             printf("ERROR memory allocation error\n");
-        
-        if (!fread(&meshinfo->vertices, 2 * 3, meshinfo->numVertices, file))
-            printf("ERROR file read error!\n");
-        printf("read vertices\n");
-        
-        // num index
-        if (!fread(&meshinfo->numIndices, 2, 1, file))
-            printf("ERROR file read error!\n");
-        printf("num indices: %i\n", meshinfo->numIndices);
-        
-        // indices
-        if (meshinfo->numIndices) {
-            meshinfo->indices = malloc(2 * 3 * meshinfo->numIndices);
-            if (!meshinfo->indices)
-                printf("ERROR memory allocation error\n");
-            if (!fread(&meshinfo->indices, 2 * 3, meshinfo->numIndices, file))
-                printf("ERROR file read error!\n");
-            printf("read indices\n");
         }
         
-        // num edge
-        if (!fread(&meshinfo->numEdges, 2, 1, file))
-            printf("ERROR file read error!\n");
-        printf("num edges: %i\n", meshinfo->numEdges);
-        
-        // edges
-        if (meshinfo->numEdges) {
-            meshinfo->edges = malloc(2 * 2 * meshinfo->numEdges);
-            if (!meshinfo->edges)
-                printf("ERROR memory allocation error\n");
-            if (!fread(&meshinfo->edges, 2 * 2, meshinfo->numEdges, file))
+        for (int n = 0; n < meshinfo->numGeoms; ++n) {     
+            struct GeomInfo * geominfo = &meshinfo->geoms[n];
+            
+            // mat name length
+            if (!fread(&geominfo->matNameLen, 1, 1, file))
                 printf("ERROR file read error!\n");
-            printf("read edges\n");
-        }
-        
-        // num normals
-        if (!fread(&meshinfo->numNormals, 2, 1, file))
-            printf("ERROR file read error!\n");
-        printf("num normals: %i\n", meshinfo->numNormals);
-        
-        // normals
-        if (meshinfo->numNormals) {
-            meshinfo->normals = malloc(2 * 3 * meshinfo->numNormals);
-            if (!meshinfo->normals)
-                printf("ERROR memory allocation error\n");
-            if (!fread(&meshinfo->normals, 2 * 3, meshinfo->numNormals, file))
-                printf("ERROR file read error!\n");
-            printf("read normals\n");
-        }
-        
-        // num colors
-        if (!fread(&meshinfo->numColors, 2, 1, file))
-            printf("ERROR file read error!\n");
-        printf("num colors: %i\n", meshinfo->numColors);
-        
-        // colors
-        if (meshinfo->numColors) {
-            meshinfo->colors = malloc(2 * 3 * meshinfo->numColors);
-            if (!meshinfo->colors)
-                printf("ERROR memory allocation error\n");
-            if (!fread(&meshinfo->colors, 2 * 3, meshinfo->numColors, file))
-                printf("ERROR file read error!\n");
-            printf("read colors\n");
-        }
-        
-        // num uvs
-        if (!fread(&meshinfo->numUVs, 2, 1, file))
-            printf("ERROR file read error!\n");
-        printf("num uvs: %i\n", meshinfo->numUVs);
-        
-        // uvs
-        if (meshinfo->numUVs) {
-            meshinfo->uvs = malloc(2 * 2 * meshinfo->numUVs);
-            if (!meshinfo->uvs)
+            printf("mat name length: %i\n", geominfo->matNameLen);
+            
+            // mat name
+            geominfo->matName = malloc(geominfo->matNameLen);
+            if (!geominfo->matName)
                 printf("ERROR memory allocation error");
-            if (!fread(&meshinfo->uvs, 2 * 2, meshinfo->numUVs, file))
+            
+            if (!fread(&geominfo->matName, 1, geominfo->matNameLen, file))
                 printf("ERROR file read error!\n");
-            printf("read uvs\n");
+            printf("mat name: \"%.*s\"\n", geominfo->matNameLen, &geominfo->matName);
+            
+            // num vertex
+            if (!fread(&geominfo->numVertices, 2, 1, file))
+                printf("ERROR file read error!\n");
+            printf("num vertices: %i\n", geominfo->numVertices);
+            
+            // vertices
+            geominfo->vertices = malloc(2 * 3 * geominfo->numVertices);
+            if (!geominfo->vertices)
+                printf("ERROR memory allocation error\n");
+            
+            if (!fread(&geominfo->vertices, 2 * 3, geominfo->numVertices, file))
+                printf("ERROR file read error!\n");
+            printf("read vertices\n");
+            
+            // num index
+            if (!fread(&geominfo->numIndices, 2, 1, file))
+                printf("ERROR file read error!\n");
+            printf("num indices: %i\n", geominfo->numIndices);
+            
+            // indices
+            if (geominfo->numIndices) {
+                geominfo->indices = malloc(2 * 3 * geominfo->numIndices);
+                if (!geominfo->indices)
+                    printf("ERROR memory allocation error\n");
+                if (!fread(&geominfo->indices, 2 * 3, geominfo->numIndices, file))
+                    printf("ERROR file read error!\n");
+                printf("read indices\n");
+            }
+            
+            // num edge
+            if (!fread(&geominfo->numEdges, 2, 1, file))
+                printf("ERROR file read error!\n");
+            printf("num edges: %i\n", geominfo->numEdges);
+            
+            // edges
+            if (geominfo->numEdges) {
+                geominfo->edges = malloc(2 * 2 * geominfo->numEdges);
+                if (!geominfo->edges)
+                    printf("ERROR memory allocation error\n");
+                if (!fread(&geominfo->edges, 2 * 2, geominfo->numEdges, file))
+                    printf("ERROR file read error!\n");
+                printf("read edges\n");
+            }
+            
+            // num normals
+            if (!fread(&geominfo->numNormals, 2, 1, file))
+                printf("ERROR file read error!\n");
+            printf("num normals: %i\n", geominfo->numNormals);
+            
+            // normals
+            if (geominfo->numNormals) {
+                geominfo->normals = malloc(2 * 3 * geominfo->numNormals);
+                if (!geominfo->normals)
+                    printf("ERROR memory allocation error\n");
+                if (!fread(&geominfo->normals, 2 * 3, geominfo->numNormals, file))
+                    printf("ERROR file read error!\n");
+                printf("read normals\n");
+            }
+            
+            // num colors
+            if (!fread(&geominfo->numColors, 2, 1, file))
+                printf("ERROR file read error!\n");
+            printf("num colors: %i\n", geominfo->numColors);
+            
+            // colors
+            if (geominfo->numColors) {
+                geominfo->colors = malloc(2 * 3 * geominfo->numColors);
+                if (!geominfo->colors)
+                    printf("ERROR memory allocation error\n");
+                if (!fread(&geominfo->colors, 2 * 3, geominfo->numColors, file))
+                    printf("ERROR file read error!\n");
+                printf("read colors\n");
+            }
+            
+            // num uvs
+            if (!fread(&geominfo->numUVs, 2, 1, file))
+                printf("ERROR file read error!\n");
+            printf("num uvs: %i\n", geominfo->numUVs);
+            
+            // uvs
+            if (geominfo->numUVs) {
+                geominfo->uvs = malloc(2 * 2 * geominfo->numUVs);
+                if (!geominfo->uvs)
+                    printf("ERROR memory allocation error");
+                if (!fread(&geominfo->uvs, 2 * 2, geominfo->numUVs, file))
+                    printf("ERROR file read error!\n");
+                printf("read uvs\n");
+            }
         }
+    }
+    
+    // number of materials
+    if (!fread(&f3dinfo->numMats, 2, 1, file))
+        printf("ERROR file read error!\n");
+    
+    for (int i = 0; i < f3dinfo->numMats; ++i) {
+        struct MaterialInfo * matinfo = malloc(sizeof(struct MaterialInfo));
+        
+        // name length
+        if (!fread(&matinfo->nameLen, 1, 1, file))
+            printf("ERROR file read error!\n");
+        
+        // name
+        matinfo->name = malloc(1 * matinfo->nameLen);
+        if (!fread(&matinfo->name, 1, matinfo->nameLen, file))
+            printf("ERROR file read error!\n");
+        
+        // diffuse color
+        if (!fread(&matinfo->color, 2, 3, file))
+            printf("ERROR file read error!\n");
     }
     
     // number of objects
@@ -206,15 +255,13 @@ struct File3DInfo * loadFile3D(char path[])
     for (int i = 0; i < f3dinfo->numAnims; ++i) {
         struct AnimInfo * animinfo = malloc(sizeof(struct AnimInfo));
         
-        // note: no anim name...
-        
-        // object name length
-        if (!fread(&animinfo->objectNameLen, 1, 1, file))
+        // name length
+        if (!fread(&animinfo->nameLen, 1, 1, file))
             printf("ERROR file read error!\n");
         
-        // object name
-        animinfo->objectName = malloc(1 * animinfo->objectNameLen);
-        if (!fread(&animinfo->objectName, 1, animinfo->objectNameLen, file))
+        // name
+        animinfo->name = malloc(1 * animinfo->nameLen);
+        if (!fread(&animinfo->name, 1, animinfo->nameLen, file))
             printf("ERROR file read error!\n");
         
         // num keys
@@ -246,15 +293,28 @@ void f3dFree(struct File3DInfo * f3dinfo) {
     for (int i = 0; i < f3dinfo->numMeshes; ++i) {
         struct MeshInfo * meshinfo = &f3dinfo->meshes[i];
         free(meshinfo->name);
-        free(meshinfo->vertices);
-        free(meshinfo->indices);
-        free(meshinfo->edges);
-        free(meshinfo->normals);
-        free(meshinfo->colors);
-        free(meshinfo->uvs);
+        // for each geom
+        for (int j = 0; j < meshinfo->numGeoms; ++j) {
+            struct GeomInfo * geominfo = &meshinfo->geoms[j];
+            free(geominfo->matName);
+            free(geominfo->vertices);
+            free(geominfo->indices);
+            free(geominfo->edges);
+            free(geominfo->normals);
+            free(geominfo->colors);
+            free(geominfo->uvs);
+        }
+        free(meshinfo->geoms);
     }
     // free meshes
     free(f3dinfo->meshes);
+    
+    // for each material
+    for (int i = 0; i < f3dinfo->numMats; ++i) {
+        struct MaterialInfo * matinfo = &f3dinfo->mats[i];
+        free(matinfo->name);
+    }
+    free(f3dinfo->mats);
     
     // for each object
     for (int i = 0; i < f3dinfo->numObjects; ++i) {
@@ -269,7 +329,7 @@ void f3dFree(struct File3DInfo * f3dinfo) {
     // for each anim
     for (int i = 0; i < f3dinfo->numAnims; ++i) {
         struct AnimInfo * animinfo = &f3dinfo->anims[i];
-        free(animinfo->objectName);
+        free(animinfo->name);
         free(animinfo->keys);
     }
     // free anims

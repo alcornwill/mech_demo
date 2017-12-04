@@ -16,6 +16,12 @@ bl_info = {
 # to only allow 255 vertices
 # then can use char everywhere
 # (i guess you could automatically split up meshes...)
+# YOU COULD also limit 
+# all floats to 1 char
+# then has to be in range -1.28 > 1.28
+# fixed precision 2
+# ALSO you could
+# limit names to 4 chars
 
 # NOTE
 # fixed is a short int
@@ -27,9 +33,14 @@ bl_info = {
 # bytes     type    content
 ################################
 # 2         ushort  num meshes
-################################
+############ MESHES ############ 
 # 1         uchar   name length
 # ~         char    name
+# 1         uchar   num geoms
+# ~         Geom    geoms
+############ GEOMS #############
+# 1         uchar   mat name length
+# ~         char    mat name
 # 2         ushort  num vertices
 # ~         fixed   vertex data
 # 2         ushort  num indices
@@ -43,24 +54,33 @@ bl_info = {
 # 2         ushort  num uvs
 # ~         fixed   uv data
 ################################
-# 2         ushort  num objects
+# 2         ushort  num materials
+########### MATERIALS ##########
+# 1         uchar   name length
+# ~         char    name
+# 2*3       ushort  color
 ################################
+# 2         ushort  num objects
+############ OBJECTS ###########
 # 2         uchar   name length
 # ~         char    name
 # 2         uchar   mesh name length
 # ~         char    mesh name
 # 2         uchar   parent name length
 # ~         char    parent name
+# 2         uchar   anim name length
+# ~         char    anim name
 # 2*16      fixed   transform
 ################################
 # 2         ushort  num animations
-################################
-# 1         uchar   object name length
-# ~         char    object name
+########### ANIMATIONS #########
+# 1         uchar   name length
+# ~         char    name
 # 2         ushort  num keys
 # ~         AKey    animation keys
-#   2       ushort  AKey time
-#   2*16    fixed   AKey transform
+######### ANIMATION KEYS ######
+# 2         ushort  AKey time
+# 2*16      fixed   AKey transform
 ################################
 
 
@@ -79,22 +99,20 @@ from bpy_extras.io_utils import (
     path_reference_mode,
     axis_conversion
 )
+import bmesh
+from bmesh.types import BMFaceSeq
 
-
-def mesh_triangulate(me):
-    import bmesh
-    bm = bmesh.new()
-    bm.from_mesh(me)
-    bmesh.ops.triangulate(bm, faces=bm.faces)
-    bm.to_mesh(me)
-    bm.free()
 
 def normalize_name(name):
     return name.replace('.', '').lower()
     
 def write_length(data):
     # write the length of an iterable
-    l = pack('H', len(data))
+    if type(data) == int:
+        l = pack('H', data)
+    else:
+        l = pack('H', len(data))
+        
     out.write(l)
     
 def write_zero(fmt):
@@ -102,19 +120,15 @@ def write_zero(fmt):
     out.write(l)
             
 def write_array(data):
-    # write number of elements
-    write_length(data)
-    
-    fixed = type(data[0][0]) == float
+    fixed = type(data[0]) == float
     fmt = 'h' if fixed else 'H'
     
     # write data
-    for row in data:
-        for val in row:
-            if fixed:
-                val = int(val * 1000) # fixed point precision 3
-            b = pack(fmt, val)
-            out.write(b)
+    for item in data:
+        if fixed:
+            item = int(item * 1000) # fixed point precision 3
+        b = pack(fmt, item)
+        out.write(b)
 
 def write_name(name):
     # writes number of characters, followed by char array
@@ -136,47 +150,92 @@ def write_matrix(mat):
         b = pack('f', f)
         out.write(b)
     
+def write_color(color):
+    for val in list(color):
+        val = int(val * 1000)
+        b = pack('h', val)
+        out.write(b)
+    
+def bmesh_split(bm, geom, dest):
+    dest.faces.ensure_lookup_table()
+    indices = [elem.index for elem in geom]
+    if type(geom[0]) == BMFaceSeq:
+        for face in dest.faces:
+            if face.index not in indices:
+                dest.faces.remove(dest.faces[face.index])
+    
 def write_mesh(obj, use_indices, use_edges, use_normals, use_colors, use_uvs):
     data = obj.data
     
     # write name
     write_name(data.name)
+    mats = data.materials
     
-    # write mesh data
-    verts = [list(vert.co) for vert in data.vertices]
-    write_array(verts)
+    bm = bmesh.new()
+    bm.from_mesh(data)
     
-    if use_indices:
-        mesh_triangulate(data) # doesn't export quads/ngons
-        indices = [list(poly.vertices) for poly in data.polygons]
-        write_array(indices)
-    else:
-        write_zero('H')
+    bmesh.ops.triangulate(bm, faces=bm.faces) # doesn't export quads/ngons
     
-    if use_edges:
-        edges = [list(edge.vertices) for edge in data.edges]
-        write_array(edges)
-    else:
-        write_zero('H')
+    bm.faces.ensure_lookup_table()
     
-    if use_normals:
-        normals = [list(vert.normal) for vert in data.vertices]
-        write_array(normals)
-    else:
-        write_zero('h')
-
-    if use_colors:
-        colors = [list(color.color) for color in data.vertex_colors[0].data]
-        write_array(colors)
-    else:
-        write_zero('h')
-    
-    if use_uvs:    
-        uvs = [list(uv.uv) for uv in data.uv_layers[0].data]
-        write_array(uvs)
-    else:
-        write_zero('h')
+    bms = []
+    for mat in range(len(mats)):
+        faces = [face for face in bm.faces if face.material_index == mat]
+        if faces:
+            bm2 = bmesh.new()
+            #bmesh.ops.split(bm, geom=faces, dest=bm2)
+            bm2.from_mesh(data)
+            bmesh_split(bm, geom=faces, dest=bm2)
+            bms.append((bm2, mats[mat]))
+            
+    write_length(bms)
+    for bm1, mat in bms:
+        # for each geom
+        bm1.faces.ensure_lookup_table()
+        bm1.edges.ensure_lookup_table()
         
+        # write material name
+        write_name(mat.name)
+    
+        # write verts
+        numVerts = len(bm1.verts)
+        verts = [vec for vert in bm1.verts for vec in list(vert.co)]
+        write_length(numVerts)
+        write_array(verts)
+            
+        # write indices
+        if use_indices:
+            numIndices = len(bm1.faces)
+            indices = [loop.vert.index for face in bm1.faces for loop in face.loops]
+            write_length(numIndices)
+            write_array(indices)
+        else:
+            write_zero('H')
+        
+        # write edges
+        if use_edges:
+            numEdges = len(bm1.edges)
+            edges = [vert.index for edge in bm1.edges for vert in edge.verts]
+            write_length(numEdges)
+            write_array(edges)
+        else:
+            write_zero('H')
+        
+        # write normals
+        if use_normals:
+            numNormals = len(bm1.verts)
+            normals = [vec for vert in bm1.verts for vec in list(vert.normal)]
+            write_length(numNormals)
+            write_array(normals)
+        else:
+            write_zero('H')
+        
+        # todo colors and uvs
+        
+        bm1.free()
+        
+    bm.free()
+
             
 def write_obj(obj):
 
@@ -214,6 +273,9 @@ def write_anim(obj):
         out.write(pack('f', t))
         write_matrix(obj.matrix_local)
     
+def write_material(mat):
+    write_name(mat.name)
+    write_color(mat.diffuse_color)
  
 def custom_export(filepath, *args):
     global out
@@ -225,6 +287,12 @@ def custom_export(filepath, *args):
     write_length(objs)
     for obj in objs:
         write_mesh(obj, *args)
+        
+    # write materials
+    mats = bpy.data.materials
+    write_length(mats)
+    for mat in mats:
+        write_material(mat)
         
     # write objects
     write_length(objs)

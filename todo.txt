@@ -1,35 +1,16 @@
 
+
+
+export
+    split mesh by material
+    export multiple meshes (geoms)
+    export materials
+    export anim name, not object name
+
 bug
     sporadic segmentation faults...
     so I am writing out of bounds somewhere?
-    
 
-HMM
-    ok vertex colors won't work
-    because they're per-face
-    we would need to split the mesh
-    by colors, which is unpleasant
-    
-    it would be better if
-    we used materials instead (lol)
-    then it would be easier
-    to split by material
-    
-    however
-    there's a few things
-    we need to implement first
-    
-    * multiple mesh per object
-    * materials (MaterialInfo, Material)
-        normally a material
-        might specify a shader
-        but to make it easier
-        just do diffuse color
-    * export matrials
-    * import materials
-    * MeshInfo has material name
-    * Mesh has a Material
-    * (export vertex colors properly)
     
 
 python script to convert shader to embeddable C header?
