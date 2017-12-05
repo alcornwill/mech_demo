@@ -100,25 +100,25 @@ from bpy_extras.io_utils import (
     axis_conversion
 )
 import bmesh
-from bmesh.types import BMFaceSeq
+from bmesh.types import BMFace
 
+def write_uchar(val):
+    l = pack('B', val)
+    out.write(l)
+    log.write("wrote: uchar: {}\n".format(str(val)))
 
+def write_ushort(val):
+    l = pack('H', val)
+    out.write(l)
+    log.write("wrote: ushort: {}\n".format(str(val)))
+    
 def normalize_name(name):
     return name.replace('.', '').lower()
     
 def write_length(data):
     # write the length of an iterable
-    if type(data) == int:
-        l = pack('H', data)
-    else:
-        l = pack('H', len(data))
-        
-    out.write(l)
+    write_ushort(len(data))
     
-def write_zero(fmt):
-    l = pack(fmt, 0)
-    out.write(l)
-            
 def write_array(data):
     fixed = type(data[0]) == float
     fmt = 'h' if fixed else 'H'
@@ -129,6 +129,10 @@ def write_array(data):
             item = int(item * 1000) # fixed point precision 3
         b = pack(fmt, item)
         out.write(b)
+    if fixed:
+        log.write("wrote: short[{}]: array\n".format(len(data)))
+    else:
+        log.write("wrote: ushort[{}]: array\n".format(len(data)))
 
 def write_name(name):
     # writes number of characters, followed by char array
@@ -136,34 +140,65 @@ def write_name(name):
     name = name.encode()
     
     # write name length (unsigned char)
-    l = pack('B', len(name))
-    out.write(l)
+    write_uchar(len(name))
     
     l = len(name)
     fmt = str(l) + 's'
     b = pack(fmt, name)
     out.write(b)
+    log.write("wrote: char[{}]: {}\n".format(l, name.decode()))
     
 def write_matrix(mat):
     m = [i for vec in mat for i in vec]
     for f in m:
         b = pack('f', f)
         out.write(b)
+    log.write("wrote: matrix\n")
     
 def write_color(color):
     for val in list(color):
         val = int(val * 1000)
         b = pack('h', val)
         out.write(b)
+    log.write("wrote: color\n")
     
 def bmesh_split(bm, geom, dest):
     dest.faces.ensure_lookup_table()
     indices = [elem.index for elem in geom]
-    if type(geom[0]) == BMFaceSeq:
-        for face in dest.faces:
+    if type(geom[0]) == BMFace:
+        for face in list(dest.faces):
             if face.index not in indices:
                 dest.faces.remove(dest.faces[face.index])
+                dest.faces.ensure_lookup_table()
+        assert(len(dest.faces) == len(geom))
+        
+def bmesh_split_by_material(bm, mat):
+    # GAY
+    dest = bm.copy()
+    dest.faces.ensure_lookup_table()
+
+    for face in list(dest.faces):
+        if face.material_index != mat:
+            v1, v2, v3 = face.verts
+            dest.faces.remove(face)
+            # bmesh doesn't remove loose verts
+            if v1.is_valid and not v1.link_faces:
+                dest.verts.remove(v1)
+            if v1.is_valid and not v1.link_faces:
+                dest.verts.remove(v1)
+            if v1.is_valid and not v1.link_faces:
+                dest.verts.remove(v1)           
     
+    dest.faces.index_update()
+    dest.edges.index_update()
+    dest.verts.index_update()
+    
+    expected = len([face for face in bm.faces if face.material_index == mat]) 
+    actual = len(dest.faces)
+    assert expected == actual, "expected: {}\nactual: {}".format(expected, actual)
+    
+    return dest
+                
 def write_mesh(obj, use_indices, use_edges, use_normals, use_colors, use_uvs):
     data = obj.data
     
@@ -182,13 +217,16 @@ def write_mesh(obj, use_indices, use_edges, use_normals, use_colors, use_uvs):
     for mat in range(len(mats)):
         faces = [face for face in bm.faces if face.material_index == mat]
         if faces:
-            bm2 = bmesh.new()
+            ##bm2 = bmesh.new()
             #bmesh.ops.split(bm, geom=faces, dest=bm2)
-            bm2.from_mesh(data)
-            bmesh_split(bm, geom=faces, dest=bm2)
+            #bm2 = bm.copy()
+            #bmesh_split(bm, geom=faces, dest=bm2)
+            bm2 = bmesh_split_by_material(bm, mat)
             bms.append((bm2, mats[mat]))
             
-    write_length(bms)
+    # write number of geoms
+    write_uchar(len(bms))
+    
     for bm1, mat in bms:
         # for each geom
         bm1.faces.ensure_lookup_table()
@@ -200,37 +238,39 @@ def write_mesh(obj, use_indices, use_edges, use_normals, use_colors, use_uvs):
         # write verts
         numVerts = len(bm1.verts)
         verts = [vec for vert in bm1.verts for vec in list(vert.co)]
-        write_length(numVerts)
+        write_ushort(numVerts)
         write_array(verts)
             
         # write indices
         if use_indices:
             numIndices = len(bm1.faces)
             indices = [loop.vert.index for face in bm1.faces for loop in face.loops]
-            write_length(numIndices)
+            write_ushort(numIndices)
             write_array(indices)
         else:
-            write_zero('H')
+            write_ushort(0)
         
         # write edges
         if use_edges:
             numEdges = len(bm1.edges)
             edges = [vert.index for edge in bm1.edges for vert in edge.verts]
-            write_length(numEdges)
+            write_ushort(numEdges)
             write_array(edges)
         else:
-            write_zero('H')
+            write_ushort(0)
         
         # write normals
         if use_normals:
             numNormals = len(bm1.verts)
             normals = [vec for vert in bm1.verts for vec in list(vert.normal)]
-            write_length(numNormals)
+            write_ushort(numNormals)
             write_array(normals)
         else:
-            write_zero('H')
+            write_ushort(0)
         
         # todo colors and uvs
+        write_ushort(0)
+        write_ushort(0)
         
         bm1.free()
         
@@ -248,15 +288,16 @@ def write_obj(obj):
     else:
         out.write(pack('B', 0))
         
+    write_name(obj.name) # animation name...
+        
     # use OrientationHelper?
     write_matrix(obj.matrix_local)
 
     
 def write_anim(obj):
 
-    write_name(obj.name)
-    
-    # todo we could write action.name
+    write_name(obj.name) # hmm, the object name is the animation name
+    # todo we could mangle with action.name
     # but only one animation for now
     
     # write animation keys
@@ -266,11 +307,10 @@ def write_anim(obj):
     start, end = anim.frame_range
     start = int(start)
     end = int(end)
-    out.write(pack('I', end - start))
+    write_ushort(end - start)
     for t in range(start, end+1):
         bpy.context.scene.frame_set(t)
-
-        out.write(pack('f', t))
+        write_ushort(t)
         write_matrix(obj.matrix_local)
     
 def write_material(mat):
@@ -284,27 +324,32 @@ def custom_export(filepath, *args):
     objs = bpy.context.selected_objects
     
     # write meshes
+    log.write("#### MESHES ####\n")
     write_length(objs)
     for obj in objs:
         write_mesh(obj, *args)
         
     # write materials
+    log.write("#### MATERIALS ####\n")
     mats = bpy.data.materials
     write_length(mats)
     for mat in mats:
         write_material(mat)
         
     # write objects
+    log.write("#### OBJECTS ####\n")
     write_length(objs)
     for obj in objs:
         write_obj(obj)
     
     # write animations
+    log.write("#### ANIMATIONS ####\n")
     write_length(objs)
     for obj in objs:
         write_anim(obj)
         
     out.close()
+    log.close()
     
 IOOBJOrientationHelper = orientation_helper_factory("IOOBJOrientationHelper", axis_forward='-Z', axis_up='Y')
 
@@ -341,6 +386,9 @@ class SimpleOperator(bpy.types.Operator, ExportHelper, IOOBJOrientationHelper):
         # i guess, to use global_matrix
         # you have to multiply by all
         # matrices, vertices, normals?
+        
+        global log
+        log = open(self.filepath + '.log', 'w')
     
         custom_export(self.filepath, self.indices, self.edges, self.normals, self.colors, self.uvs)
         context.scene.frame_set(1)

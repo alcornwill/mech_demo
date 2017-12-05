@@ -1,12 +1,5 @@
 
 
-
-export
-    split mesh by material
-    export multiple meshes (geoms)
-    export materials
-    export anim name, not object name
-
 bug
     sporadic segmentation faults...
     so I am writing out of bounds somewhere?
@@ -28,6 +21,12 @@ exporter
 experiment
     round floats to look like PS1 floating point precision errors
     
+learning
+    how do they do reading of binary files in other C libraries?
+    do error handling properly and more specific error messages
+    tests?
+    anything to learn by looking at disassembly?
+
     
     
 int getShaderSource(char path[], GLint *shaderLen, char * shaderSource) {

@@ -1,0 +1,657 @@
+#### MESHES ####
+wrote: ushort: 12
+wrote: uchar: 4
+wrote: char[4]: body
+wrote: uchar: 5
+wrote: uchar: 4
+wrote: char[4]: blue
+wrote: ushort: 531
+wrote: short[1593]: array
+wrote: ushort: 592
+wrote: ushort[1776]: array
+wrote: ushort: 0
+wrote: ushort: 531
+wrote: short[1593]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 4
+wrote: char[4]: grey
+wrote: ushort: 426
+wrote: short[1278]: array
+wrote: ushort: 44
+wrote: ushort[132]: array
+wrote: ushort: 0
+wrote: ushort: 426
+wrote: short[1278]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: white
+wrote: ushort: 497
+wrote: short[1491]: array
+wrote: ushort: 448
+wrote: ushort[1344]: array
+wrote: ushort: 0
+wrote: ushort: 497
+wrote: short[1491]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 8
+wrote: char[8]: darkgrey
+wrote: ushort: 430
+wrote: short[1290]: array
+wrote: ushort: 72
+wrote: ushort[216]: array
+wrote: ushort: 0
+wrote: ushort: 430
+wrote: short[1290]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: cream
+wrote: ushort: 422
+wrote: short[1266]: array
+wrote: ushort: 24
+wrote: ushort[72]: array
+wrote: ushort: 0
+wrote: ushort: 422
+wrote: short[1266]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: leg1l
+wrote: uchar: 3
+wrote: uchar: 4
+wrote: char[4]: blue
+wrote: ushort: 96
+wrote: short[288]: array
+wrote: ushort: 28
+wrote: ushort[84]: array
+wrote: ushort: 0
+wrote: ushort: 96
+wrote: short[288]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: white
+wrote: ushort: 108
+wrote: short[324]: array
+wrote: ushort: 106
+wrote: ushort[318]: array
+wrote: ushort: 0
+wrote: ushort: 108
+wrote: short[324]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 8
+wrote: char[8]: darkgrey
+wrote: ushort: 107
+wrote: short[321]: array
+wrote: ushort: 108
+wrote: ushort[324]: array
+wrote: ushort: 0
+wrote: ushort: 107
+wrote: short[321]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: leg2l
+wrote: uchar: 3
+wrote: uchar: 6
+wrote: char[6]: yellow
+wrote: ushort: 69
+wrote: short[207]: array
+wrote: ushort: 22
+wrote: ushort[66]: array
+wrote: ushort: 0
+wrote: ushort: 69
+wrote: short[207]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 8
+wrote: char[8]: darkgrey
+wrote: ushort: 74
+wrote: short[222]: array
+wrote: ushort: 56
+wrote: ushort[168]: array
+wrote: ushort: 0
+wrote: ushort: 74
+wrote: short[222]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: white
+wrote: ushort: 73
+wrote: short[219]: array
+wrote: ushort: 60
+wrote: ushort[180]: array
+wrote: ushort: 0
+wrote: ushort: 73
+wrote: short[219]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: leg1r
+wrote: uchar: 3
+wrote: uchar: 4
+wrote: char[4]: blue
+wrote: ushort: 93
+wrote: short[279]: array
+wrote: ushort: 28
+wrote: ushort[84]: array
+wrote: ushort: 0
+wrote: ushort: 93
+wrote: short[279]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 8
+wrote: char[8]: darkgrey
+wrote: ushort: 109
+wrote: short[327]: array
+wrote: ushort: 108
+wrote: ushort[324]: array
+wrote: ushort: 0
+wrote: ushort: 109
+wrote: short[327]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: white
+wrote: ushort: 105
+wrote: short[315]: array
+wrote: ushort: 106
+wrote: ushort[318]: array
+wrote: ushort: 0
+wrote: ushort: 105
+wrote: short[315]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: leg2r
+wrote: uchar: 3
+wrote: uchar: 5
+wrote: char[5]: white
+wrote: ushort: 72
+wrote: short[216]: array
+wrote: ushort: 60
+wrote: ushort[180]: array
+wrote: ushort: 0
+wrote: ushort: 72
+wrote: short[216]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 8
+wrote: char[8]: darkgrey
+wrote: ushort: 71
+wrote: short[213]: array
+wrote: ushort: 56
+wrote: ushort[168]: array
+wrote: ushort: 0
+wrote: ushort: 71
+wrote: short[213]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 6
+wrote: char[6]: yellow
+wrote: ushort: 65
+wrote: short[195]: array
+wrote: ushort: 22
+wrote: ushort[66]: array
+wrote: ushort: 0
+wrote: ushort: 65
+wrote: short[195]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: arm1r
+wrote: uchar: 2
+wrote: uchar: 4
+wrote: char[4]: blue
+wrote: ushort: 40
+wrote: short[120]: array
+wrote: ushort: 56
+wrote: ushort[168]: array
+wrote: ushort: 0
+wrote: ushort: 40
+wrote: short[120]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 4
+wrote: char[4]: grey
+wrote: ushort: 31
+wrote: short[93]: array
+wrote: ushort: 20
+wrote: ushort[60]: array
+wrote: ushort: 0
+wrote: ushort: 31
+wrote: short[93]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: arm2r
+wrote: uchar: 1
+wrote: uchar: 4
+wrote: char[4]: blue
+wrote: ushort: 26
+wrote: short[78]: array
+wrote: ushort: 48
+wrote: ushort[144]: array
+wrote: ushort: 0
+wrote: ushort: 26
+wrote: short[78]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: handr
+wrote: uchar: 1
+wrote: uchar: 5
+wrote: char[5]: white
+wrote: ushort: 80
+wrote: short[240]: array
+wrote: ushort: 120
+wrote: ushort[360]: array
+wrote: ushort: 0
+wrote: ushort: 80
+wrote: short[240]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 4
+wrote: char[4]: head
+wrote: uchar: 5
+wrote: uchar: 5
+wrote: char[5]: white
+wrote: ushort: 227
+wrote: short[681]: array
+wrote: ushort: 53
+wrote: ushort[159]: array
+wrote: ushort: 0
+wrote: ushort: 227
+wrote: short[681]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 4
+wrote: char[4]: blue
+wrote: ushort: 223
+wrote: short[669]: array
+wrote: ushort: 44
+wrote: ushort[132]: array
+wrote: ushort: 0
+wrote: ushort: 223
+wrote: short[669]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: green
+wrote: ushort: 219
+wrote: short[657]: array
+wrote: ushort: 3
+wrote: ushort[9]: array
+wrote: ushort: 0
+wrote: ushort: 219
+wrote: short[657]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 8
+wrote: char[8]: darkgrey
+wrote: ushort: 304
+wrote: short[912]: array
+wrote: ushort: 472
+wrote: ushort[1416]: array
+wrote: ushort: 0
+wrote: ushort: 304
+wrote: short[912]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 4
+wrote: char[4]: grey
+wrote: ushort: 226
+wrote: short[678]: array
+wrote: ushort: 44
+wrote: ushort[132]: array
+wrote: ushort: 0
+wrote: ushort: 226
+wrote: short[678]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: arm1l
+wrote: uchar: 2
+wrote: uchar: 4
+wrote: char[4]: blue
+wrote: ushort: 38
+wrote: short[114]: array
+wrote: ushort: 56
+wrote: ushort[168]: array
+wrote: ushort: 0
+wrote: ushort: 38
+wrote: short[114]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 4
+wrote: char[4]: grey
+wrote: ushort: 34
+wrote: short[102]: array
+wrote: ushort: 20
+wrote: ushort[60]: array
+wrote: ushort: 0
+wrote: ushort: 34
+wrote: short[102]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: arm2l
+wrote: uchar: 1
+wrote: uchar: 4
+wrote: char[4]: blue
+wrote: ushort: 26
+wrote: short[78]: array
+wrote: ushort: 48
+wrote: ushort[144]: array
+wrote: ushort: 0
+wrote: ushort: 26
+wrote: short[78]: array
+wrote: ushort: 0
+wrote: ushort: 0
+wrote: uchar: 5
+wrote: char[5]: handl
+wrote: uchar: 1
+wrote: uchar: 5
+wrote: char[5]: white
+wrote: ushort: 80
+wrote: short[240]: array
+wrote: ushort: 120
+wrote: ushort[360]: array
+wrote: ushort: 0
+wrote: ushort: 80
+wrote: short[240]: array
+wrote: ushort: 0
+wrote: ushort: 0
+#### MATERIALS ####
+wrote: ushort: 7
+wrote: uchar: 4
+wrote: char[4]: blue
+wrote: color
+wrote: uchar: 5
+wrote: char[5]: cream
+wrote: color
+wrote: uchar: 8
+wrote: char[8]: darkgrey
+wrote: color
+wrote: uchar: 5
+wrote: char[5]: green
+wrote: color
+wrote: uchar: 4
+wrote: char[4]: grey
+wrote: color
+wrote: uchar: 5
+wrote: char[5]: white
+wrote: color
+wrote: uchar: 6
+wrote: char[6]: yellow
+wrote: color
+#### OBJECTS ####
+wrote: ushort: 12
+wrote: uchar: 4
+wrote: char[4]: body
+wrote: uchar: 4
+wrote: char[4]: body
+wrote: uchar: 4
+wrote: char[4]: body
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: leg1l
+wrote: uchar: 5
+wrote: char[5]: leg1l
+wrote: uchar: 4
+wrote: char[4]: body
+wrote: uchar: 5
+wrote: char[5]: leg1l
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: leg2l
+wrote: uchar: 5
+wrote: char[5]: leg2l
+wrote: uchar: 5
+wrote: char[5]: leg1l
+wrote: uchar: 5
+wrote: char[5]: leg2l
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: leg1r
+wrote: uchar: 5
+wrote: char[5]: leg1r
+wrote: uchar: 4
+wrote: char[4]: body
+wrote: uchar: 5
+wrote: char[5]: leg1r
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: leg2r
+wrote: uchar: 5
+wrote: char[5]: leg2r
+wrote: uchar: 5
+wrote: char[5]: leg1r
+wrote: uchar: 5
+wrote: char[5]: leg2r
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: arm1r
+wrote: uchar: 5
+wrote: char[5]: arm1r
+wrote: uchar: 4
+wrote: char[4]: body
+wrote: uchar: 5
+wrote: char[5]: arm1r
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: arm2r
+wrote: uchar: 5
+wrote: char[5]: arm2r
+wrote: uchar: 5
+wrote: char[5]: arm1r
+wrote: uchar: 5
+wrote: char[5]: arm2r
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: handr
+wrote: uchar: 5
+wrote: char[5]: handr
+wrote: uchar: 5
+wrote: char[5]: arm2r
+wrote: uchar: 5
+wrote: char[5]: handr
+wrote: matrix
+wrote: uchar: 4
+wrote: char[4]: head
+wrote: uchar: 4
+wrote: char[4]: head
+wrote: uchar: 4
+wrote: char[4]: body
+wrote: uchar: 4
+wrote: char[4]: head
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: arm1l
+wrote: uchar: 5
+wrote: char[5]: arm1l
+wrote: uchar: 4
+wrote: char[4]: body
+wrote: uchar: 5
+wrote: char[5]: arm1l
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: arm2l
+wrote: uchar: 5
+wrote: char[5]: arm2l
+wrote: uchar: 5
+wrote: char[5]: arm1l
+wrote: uchar: 5
+wrote: char[5]: arm2l
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: handl
+wrote: uchar: 5
+wrote: char[5]: handl
+wrote: uchar: 5
+wrote: char[5]: arm2l
+wrote: uchar: 5
+wrote: char[5]: handl
+wrote: matrix
+#### ANIMATIONS ####
+wrote: ushort: 12
+wrote: uchar: 4
+wrote: char[4]: body
+wrote: ushort: 4
+wrote: ushort: 1
+wrote: matrix
+wrote: ushort: 2
+wrote: matrix
+wrote: ushort: 3
+wrote: matrix
+wrote: ushort: 4
+wrote: matrix
+wrote: ushort: 5
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: leg1l
+wrote: ushort: 4
+wrote: ushort: 1
+wrote: matrix
+wrote: ushort: 2
+wrote: matrix
+wrote: ushort: 3
+wrote: matrix
+wrote: ushort: 4
+wrote: matrix
+wrote: ushort: 5
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: leg2l
+wrote: ushort: 4
+wrote: ushort: 1
+wrote: matrix
+wrote: ushort: 2
+wrote: matrix
+wrote: ushort: 3
+wrote: matrix
+wrote: ushort: 4
+wrote: matrix
+wrote: ushort: 5
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: leg1r
+wrote: ushort: 4
+wrote: ushort: 1
+wrote: matrix
+wrote: ushort: 2
+wrote: matrix
+wrote: ushort: 3
+wrote: matrix
+wrote: ushort: 4
+wrote: matrix
+wrote: ushort: 5
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: leg2r
+wrote: ushort: 4
+wrote: ushort: 1
+wrote: matrix
+wrote: ushort: 2
+wrote: matrix
+wrote: ushort: 3
+wrote: matrix
+wrote: ushort: 4
+wrote: matrix
+wrote: ushort: 5
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: arm1r
+wrote: ushort: 4
+wrote: ushort: 1
+wrote: matrix
+wrote: ushort: 2
+wrote: matrix
+wrote: ushort: 3
+wrote: matrix
+wrote: ushort: 4
+wrote: matrix
+wrote: ushort: 5
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: arm2r
+wrote: ushort: 4
+wrote: ushort: 1
+wrote: matrix
+wrote: ushort: 2
+wrote: matrix
+wrote: ushort: 3
+wrote: matrix
+wrote: ushort: 4
+wrote: matrix
+wrote: ushort: 5
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: handr
+wrote: ushort: 4
+wrote: ushort: 1
+wrote: matrix
+wrote: ushort: 2
+wrote: matrix
+wrote: ushort: 3
+wrote: matrix
+wrote: ushort: 4
+wrote: matrix
+wrote: ushort: 5
+wrote: matrix
+wrote: uchar: 4
+wrote: char[4]: head
+wrote: ushort: 4
+wrote: ushort: 1
+wrote: matrix
+wrote: ushort: 2
+wrote: matrix
+wrote: ushort: 3
+wrote: matrix
+wrote: ushort: 4
+wrote: matrix
+wrote: ushort: 5
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: arm1l
+wrote: ushort: 4
+wrote: ushort: 1
+wrote: matrix
+wrote: ushort: 2
+wrote: matrix
+wrote: ushort: 3
+wrote: matrix
+wrote: ushort: 4
+wrote: matrix
+wrote: ushort: 5
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: arm2l
+wrote: ushort: 4
+wrote: ushort: 1
+wrote: matrix
+wrote: ushort: 2
+wrote: matrix
+wrote: ushort: 3
+wrote: matrix
+wrote: ushort: 4
+wrote: matrix
+wrote: ushort: 5
+wrote: matrix
+wrote: uchar: 5
+wrote: char[5]: handl
+wrote: ushort: 4
+wrote: ushort: 1
+wrote: matrix
+wrote: ushort: 2
+wrote: matrix
+wrote: ushort: 3
+wrote: matrix
+wrote: ushort: 4
+wrote: matrix
+wrote: ushort: 5
+wrote: matrix

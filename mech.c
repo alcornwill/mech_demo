@@ -615,7 +615,7 @@ void updateObject(struct Object * obj) {
     // TODO linear interpolation
     // and sound effect
     
-    struct AnimKey * key = &obj->anim.keys[pose];
+    struct AnimKey * key = &obj->anim.keys[pose]; // note: ignoring 'time'
     if (obj->parent) {
         obj->model = m4_mul(obj->parent->model, key->transform);
     } else {

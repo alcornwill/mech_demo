@@ -29,11 +29,14 @@ struct File3DInfo * loadFile3D(char path[])
         printf("ERROR file read error!\n");
     printf("num meshes: %i\n", f3dinfo->numMeshes);
     
+    f3dinfo->meshes = malloc(f3dinfo->numMeshes * sizeof(struct MeshInfo));
+    if (!f3dinfo->meshes) {
+        printf("ERROR memory allocation error\n");
+    }
+    
     // meshes
     for (int i = 0; i < f3dinfo->numMeshes; ++i) {
-        struct MeshInfo * meshinfo = malloc(sizeof(struct MeshInfo));
-        if (!meshinfo)
-            printf("ERROR memory allocation error\n");
+        struct MeshInfo * meshinfo = &f3dinfo->meshes[i];
         
         // name length
         if (!fread(&meshinfo->nameLen, 1, 1, file))
@@ -171,8 +174,12 @@ struct File3DInfo * loadFile3D(char path[])
     if (!fread(&f3dinfo->numMats, 2, 1, file))
         printf("ERROR file read error!\n");
     
+    f3dinfo->mats = malloc(f3dinfo->numMats * sizeof(struct MaterialInfo));
+    if (!f3dinfo->mats)
+        printf("ERROR memory allocation error\n");
+        
     for (int i = 0; i < f3dinfo->numMats; ++i) {
-        struct MaterialInfo * matinfo = malloc(sizeof(struct MaterialInfo));
+        struct MaterialInfo * matinfo = &f3dinfo->mats[i];
         
         // name length
         if (!fread(&matinfo->nameLen, 1, 1, file))
@@ -192,8 +199,12 @@ struct File3DInfo * loadFile3D(char path[])
     if (!fread(&f3dinfo->numObjects, 2, 1, file))
         printf("ERROR file read error!\n");
     
+    f3dinfo->objects = malloc(f3dinfo->numObjects * sizeof(struct ObjectInfo));
+    if (!f3dinfo->objects)
+        printf("ERROR memory allocation error\n");
+    
     for (int i = 0; i < f3dinfo->numObjects; ++i) {
-        struct ObjectInfo * objinfo = malloc(sizeof(struct ObjectInfo));
+        struct ObjectInfo * objinfo = &f3dinfo->objects[i];
         
         // name length
         if (!fread(&objinfo->nameLen, 1, 1, file))
@@ -252,8 +263,12 @@ struct File3DInfo * loadFile3D(char path[])
     if (!fread(&f3dinfo->numAnims, 2, 1, file))
         printf("ERROR file read error!\n");
     
+    f3dinfo->anims = malloc(f3dinfo->numAnims * sizeof(struct AnimInfo));
+    if (!f3dinfo->anims)
+        printf("ERROR memory allocation error\n");
+    
     for (int i = 0; i < f3dinfo->numAnims; ++i) {
-        struct AnimInfo * animinfo = malloc(sizeof(struct AnimInfo));
+        struct AnimInfo * animinfo = &f3dinfo->anims[i];
         
         // name length
         if (!fread(&animinfo->nameLen, 1, 1, file))
