@@ -1,0 +1,1 @@
+mklink /H "%APPDATA%\Blender Foundation\Blender\2.79\scripts\addons\export_custom.py" export_custom.py

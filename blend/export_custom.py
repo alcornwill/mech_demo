@@ -111,6 +111,14 @@ def write_ushort(val):
     l = pack('H', val)
     out.write(l)
     log.write("wrote: ushort: {}\n".format(str(val)))
+
+def write_short(val):
+    l = pack('h', val)
+    out.write(l)
+    log.write("wrote: short: {}\n".format(str(val)))
+    
+def write_fixed(val):
+    write_short(int(val * 1000))
     
 def normalize_name(name):
     return name.replace('.', '').lower()
@@ -151,15 +159,12 @@ def write_name(name):
 def write_matrix(mat):
     m = [i for vec in mat for i in vec]
     for f in m:
-        b = pack('f', f)
-        out.write(b)
+        write_fixed(f)
     log.write("wrote: matrix\n")
     
 def write_color(color):
     for val in list(color):
-        val = int(val * 1000)
-        b = pack('h', val)
-        out.write(b)
+        write_fixed(val)
     log.write("wrote: color\n")
     
 def bmesh_split(bm, geom, dest):
@@ -286,7 +291,7 @@ def write_obj(obj):
     if obj.parent:
         write_name(obj.parent.name)
     else:
-        out.write(pack('B', 0))
+        write_uchar(0)
         
     write_name(obj.name) # animation name...
         
@@ -306,9 +311,9 @@ def write_anim(obj):
     anim = obj.animation_data.action
     start, end = anim.frame_range
     start = int(start)
-    end = int(end)
+    end = int(end+1)
     write_ushort(end - start)
-    for t in range(start, end+1):
+    for t in range(start, end):
         bpy.context.scene.frame_set(t)
         write_ushort(t)
         write_matrix(obj.matrix_local)

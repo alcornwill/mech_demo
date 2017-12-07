@@ -1,9 +1,7 @@
 
 
-bug
-    sporadic segmentation faults...
-    so I am writing out of bounds somewhere?
-
+ok
+    just debug rest of load3DFile, initBuffers, update and render
     
 
 python script to convert shader to embeddable C header?

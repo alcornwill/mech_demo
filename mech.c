@@ -4,6 +4,7 @@
 #include <SDL_opengl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MATH_3D_IMPLEMENTATION
 #include "math_3d.h"
@@ -49,7 +50,7 @@ GLuint gVBO = 0;
 GLuint gIBO = 0;
 GLuint gVAO = 0;
 
-unsigned char *keys;
+const unsigned char *keys;
 int quit = 0;
 
 mat4_t proj;
@@ -537,7 +538,7 @@ void load3DFile() {
                     
                     key->time = keyinfo->time;
                     
-                    short * t = &keyinfo->transform;
+                    short * t = keyinfo->transform;
                     key->transform = mat4(
                         FIXED(t[0]), FIXED(t[1]), FIXED(t[2]), FIXED(t[3]), 
                         FIXED(t[4]), FIXED(t[5]), FIXED(t[6]), FIXED(t[7]),
@@ -662,8 +663,8 @@ void render()
     
     for (int i = 0; i < gNumObjects; ++i) {
         struct Object * obj = &gObjects[i];
-        glUniformMatrix4fv(gMVPMatrixLocation, 1, GL_FALSE, &obj->mvp);
-        glUniformMatrix4fv(gNormalMatrixLocation, 1, GL_FALSE, &obj->normalMatrix);
+        glUniformMatrix4fv(gMVPMatrixLocation, 1, GL_FALSE, (GLfloat*)&obj->mvp);
+        glUniformMatrix4fv(gNormalMatrixLocation, 1, GL_FALSE, (GLfloat*)&obj->normalMatrix);
         for (int j = 0; j < obj->mesh.numGeoms; ++j){
             struct Geom * geom = &obj->mesh.geoms[j];
             glUniform3f(gDiffuseColorLocation, geom->mat->color[0], geom->mat->color[1], geom->mat->color[2]);
