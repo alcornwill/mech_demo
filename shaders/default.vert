@@ -1,6 +1,6 @@
 #version 330
 
-#define USE_VERTEX_COLORS
+//#define USE_VERTEX_COLORS
 //#define UNLIT
 
 const vec3 ambient = vec3(0.1f, 0.1f, 0.1f);
@@ -13,6 +13,9 @@ in vec3 color;
 
 uniform mat4 MVP;
 uniform mat3 NormalMatrix;
+uniform vec3 DiffuseColor;
+
+out vec4 Color;
 
 void directional_light(vec3 surface_normal, inout vec3 scatteredLight)
 {
@@ -26,7 +29,7 @@ void main()
     vec4 v_pos = vec4(position, 1.0f);
 	gl_Position = MVP * v_pos;
 
-	vec3 col = vec3();
+	vec3 col = DiffuseColor;
 	#ifdef USE_VERTEX_COLORS
 	col *= color;
 	#endif

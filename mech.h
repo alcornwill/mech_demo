@@ -19,7 +19,7 @@ struct DrawElementInfo {
 
 struct Material {
     char * name;
-    short color[3];
+    float color[3];
 };
 
 struct Geom {
@@ -55,11 +55,10 @@ struct Anim {
 };
 
 
-
 struct Object {
     char * name;
     struct Object * parent;
-    struct Object * children;
+    struct Object ** children;
     unsigned short numChildren;
     struct Mesh mesh;
     struct Anim anim;

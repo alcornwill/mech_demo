@@ -217,7 +217,7 @@ struct File3DInfo * loadFile3D(char path[])
         printf("object name length: %i\n", objinfo->nameLen);
         
         // name
-        objinfo->name = malloc(1 * objinfo->nameLen);
+        objinfo->name = malloc(objinfo->nameLen);
         if (!fread(objinfo->name, 1, objinfo->nameLen, file))
             printf("ERROR file read error!\n");
         printf("object name: \"%.*s\"\n", objinfo->nameLen, objinfo->name);
@@ -229,7 +229,7 @@ struct File3DInfo * loadFile3D(char path[])
         
         // mesh name
         if (objinfo->meshNameLen) {
-            objinfo->meshName = malloc(1 * objinfo->meshNameLen);
+            objinfo->meshName = malloc(objinfo->meshNameLen);
             if (!fread(objinfo->meshName, 1, objinfo->meshNameLen, file))
                 printf("ERROR file read error!\n");
             printf("mesh name: \"%.*s\"\n", objinfo->meshNameLen, objinfo->meshName);
@@ -244,7 +244,7 @@ struct File3DInfo * loadFile3D(char path[])
         
         // parent name
         if (objinfo->parentNameLen) {
-            objinfo->parentName = malloc(1 * objinfo->parentNameLen);
+            objinfo->parentName = malloc(objinfo->parentNameLen);
             if (!fread(objinfo->parentName, 1, objinfo->parentNameLen, file))
                 printf("ERROR file read error!\n");
             printf("parent name: \"%.*s\"\n", objinfo->parentNameLen, objinfo->parentName);
@@ -259,7 +259,7 @@ struct File3DInfo * loadFile3D(char path[])
         
         // anim name
         if (objinfo->animNameLen) {
-            objinfo->animName = malloc(1 * objinfo->animNameLen);
+            objinfo->animName = malloc(objinfo->animNameLen);
             if (!fread(objinfo->animName, 1, objinfo->animNameLen, file))
                 printf("ERROR file read error!\n");
             printf("animation name: \"%.*s\"\n", objinfo->animNameLen, objinfo->animName);
@@ -301,9 +301,11 @@ struct File3DInfo * loadFile3D(char path[])
             printf("ERROR file read error!\n");
         printf("animation keys: %i\n", animinfo->numKeys);
         
+        animinfo->keys = malloc(sizeof(struct AnimKeyInfo) * animinfo->numKeys);
+        
         // animation keys
         for (int j = 0; j < animinfo->numKeys; ++j) {
-            struct AnimKeyInfo * keyinfo = malloc(sizeof(struct AnimKeyInfo));
+            struct AnimKeyInfo * keyinfo = &animinfo->keys[j];
             
             // time
             if (!fread(&keyinfo->time, 2, 1, file))

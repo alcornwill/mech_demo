@@ -1,10 +1,15 @@
 
 
 ok
-    just debug rest of load3DFile, initBuffers, update and render
+    todo rename numIndices -> numFaces?
+    THERES SOMETHING WRONG WITH ALL THESE FUCKING MATRICES BLENDER IS GIVING ME
+        
+    get attribute flats (use_indices, use_edges, use_colors, ...)
+    COPY ALL NAMES AND NAME LENGTHS TO INTERNAL DATA STRUCTURES...
+        for debug purposes
+        USE NULL TERMINATING STRINGS? (CONVERT AFTER READ BINARY)
+    export camera pos from blend?
     
-
-python script to convert shader to embeddable C header?
 
 make mech rotate
 
@@ -24,7 +29,9 @@ learning
     do error handling properly and more specific error messages
     tests?
     anything to learn by looking at disassembly?
-
+    probably use OpenGLES
+    https://www.khronos.org/opengl/wiki/Vertex_Specification_Best_Practices
+    https://www.khronos.org/opengl/wiki/Normalized_Integer
     
     
 int getShaderSource(char path[], GLint *shaderLen, char * shaderSource) {

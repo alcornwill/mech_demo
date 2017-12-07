@@ -1,0 +1,1285 @@
+reading 3d file "../mech.3d"
+num meshes: 12
+name length: 4
+mesh name: "body"
+num geoms: 5
+mat name length: 4
+mat name: "blue"
+num vertices: 531
+read vertices
+num indices: 592
+read indices
+num edges: 0
+num normals: 531
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 4
+mat name: "grey"
+num vertices: 426
+read vertices
+num indices: 44
+read indices
+num edges: 0
+num normals: 426
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 5
+mat name: "white"
+num vertices: 497
+read vertices
+num indices: 448
+read indices
+num edges: 0
+num normals: 497
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 8
+mat name: "darkgrey"
+num vertices: 430
+read vertices
+num indices: 72
+read indices
+num edges: 0
+num normals: 430
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 5
+mat name: "cream"
+num vertices: 422
+read vertices
+num indices: 24
+read indices
+num edges: 0
+num normals: 422
+read normals
+num colors: 0
+num uvs: 0
+name length: 5
+mesh name: "leg1l"
+num geoms: 3
+mat name length: 4
+mat name: "blue"
+num vertices: 96
+read vertices
+num indices: 28
+read indices
+num edges: 0
+num normals: 96
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 5
+mat name: "white"
+num vertices: 108
+read vertices
+num indices: 106
+read indices
+num edges: 0
+num normals: 108
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 8
+mat name: "darkgrey"
+num vertices: 107
+read vertices
+num indices: 108
+read indices
+num edges: 0
+num normals: 107
+read normals
+num colors: 0
+num uvs: 0
+name length: 5
+mesh name: "leg2l"
+num geoms: 3
+mat name length: 6
+mat name: "yellow"
+num vertices: 69
+read vertices
+num indices: 22
+read indices
+num edges: 0
+num normals: 69
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 8
+mat name: "darkgrey"
+num vertices: 74
+read vertices
+num indices: 56
+read indices
+num edges: 0
+num normals: 74
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 5
+mat name: "white"
+num vertices: 73
+read vertices
+num indices: 60
+read indices
+num edges: 0
+num normals: 73
+read normals
+num colors: 0
+num uvs: 0
+name length: 5
+mesh name: "leg1r"
+num geoms: 3
+mat name length: 4
+mat name: "blue"
+num vertices: 93
+read vertices
+num indices: 28
+read indices
+num edges: 0
+num normals: 93
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 8
+mat name: "darkgrey"
+num vertices: 109
+read vertices
+num indices: 108
+read indices
+num edges: 0
+num normals: 109
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 5
+mat name: "white"
+num vertices: 105
+read vertices
+num indices: 106
+read indices
+num edges: 0
+num normals: 105
+read normals
+num colors: 0
+num uvs: 0
+name length: 5
+mesh name: "leg2r"
+num geoms: 3
+mat name length: 5
+mat name: "white"
+num vertices: 72
+read vertices
+num indices: 60
+read indices
+num edges: 0
+num normals: 72
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 8
+mat name: "darkgrey"
+num vertices: 71
+read vertices
+num indices: 56
+read indices
+num edges: 0
+num normals: 71
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 6
+mat name: "yellow"
+num vertices: 65
+read vertices
+num indices: 22
+read indices
+num edges: 0
+num normals: 65
+read normals
+num colors: 0
+num uvs: 0
+name length: 5
+mesh name: "arm1r"
+num geoms: 2
+mat name length: 4
+mat name: "blue"
+num vertices: 40
+read vertices
+num indices: 56
+read indices
+num edges: 0
+num normals: 40
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 4
+mat name: "grey"
+num vertices: 31
+read vertices
+num indices: 20
+read indices
+num edges: 0
+num normals: 31
+read normals
+num colors: 0
+num uvs: 0
+name length: 5
+mesh name: "arm2r"
+num geoms: 1
+mat name length: 4
+mat name: "blue"
+num vertices: 26
+read vertices
+num indices: 48
+read indices
+num edges: 0
+num normals: 26
+read normals
+num colors: 0
+num uvs: 0
+name length: 5
+mesh name: "handr"
+num geoms: 1
+mat name length: 5
+mat name: "white"
+num vertices: 80
+read vertices
+num indices: 120
+read indices
+num edges: 0
+num normals: 80
+read normals
+num colors: 0
+num uvs: 0
+name length: 4
+mesh name: "head"
+num geoms: 5
+mat name length: 5
+mat name: "white"
+num vertices: 227
+read vertices
+num indices: 53
+read indices
+num edges: 0
+num normals: 227
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 4
+mat name: "blue"
+num vertices: 223
+read vertices
+num indices: 44
+read indices
+num edges: 0
+num normals: 223
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 5
+mat name: "green"
+num vertices: 219
+read vertices
+num indices: 3
+read indices
+num edges: 0
+num normals: 219
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 8
+mat name: "darkgrey"
+num vertices: 304
+read vertices
+num indices: 472
+read indices
+num edges: 0
+num normals: 304
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 4
+mat name: "grey"
+num vertices: 226
+read vertices
+num indices: 44
+read indices
+num edges: 0
+num normals: 226
+read normals
+num colors: 0
+num uvs: 0
+name length: 5
+mesh name: "arm1l"
+num geoms: 2
+mat name length: 4
+mat name: "blue"
+num vertices: 38
+read vertices
+num indices: 56
+read indices
+num edges: 0
+num normals: 38
+read normals
+num colors: 0
+num uvs: 0
+mat name length: 4
+mat name: "grey"
+num vertices: 34
+read vertices
+num indices: 20
+read indices
+num edges: 0
+num normals: 34
+read normals
+num colors: 0
+num uvs: 0
+name length: 5
+mesh name: "arm2l"
+num geoms: 1
+mat name length: 4
+mat name: "blue"
+num vertices: 26
+read vertices
+num indices: 48
+read indices
+num edges: 0
+num normals: 26
+read normals
+num colors: 0
+num uvs: 0
+name length: 5
+mesh name: "handl"
+num geoms: 1
+mat name length: 5
+mat name: "white"
+num vertices: 80
+read vertices
+num indices: 120
+read indices
+num edges: 0
+num normals: 80
+read normals
+num colors: 0
+num uvs: 0
+number of materials: 7
+material name length: 4
+material name: "blue"
+material color: 10 610 900
+material name length: 5
+material name: "cream"
+material color: 999 920 229
+material name length: 8
+material name: "darkgrey"
+material color: 99 99 99
+material name length: 5
+material name: "green"
+material color: 549 759 290
+material name length: 4
+material name: "grey"
+material color: 620 620 620
+material name length: 5
+material name: "white"
+material color: 999 999 999
+material name length: 6
+material name: "yellow"
+material color: 999 599 0
+number of objects: 12
+object name length: 4
+object name: "body"
+mesh name length: 4
+mesh name: "body"
+parent name length: 0
+animation name length: 4
+animation name: "body"
+object name length: 5
+object name: "leg1l"
+mesh name length: 5
+mesh name: "leg1l"
+parent name length: 4
+parent name: "body"
+animation name length: 5
+animation name: "leg1l"
+object name length: 5
+object name: "leg2l"
+mesh name length: 5
+mesh name: "leg2l"
+parent name length: 5
+parent name: "leg1l"
+animation name length: 5
+animation name: "leg2l"
+object name length: 5
+object name: "leg1r"
+mesh name length: 5
+mesh name: "leg1r"
+parent name length: 4
+parent name: "body"
+animation name length: 5
+animation name: "leg1r"
+object name length: 5
+object name: "leg2r"
+mesh name length: 5
+mesh name: "leg2r"
+parent name length: 5
+parent name: "leg1r"
+animation name length: 5
+animation name: "leg2r"
+object name length: 5
+object name: "arm1r"
+mesh name length: 5
+mesh name: "arm1r"
+parent name length: 4
+parent name: "body"
+animation name length: 5
+animation name: "arm1r"
+object name length: 5
+object name: "arm2r"
+mesh name length: 5
+mesh name: "arm2r"
+parent name length: 5
+parent name: "arm1r"
+animation name length: 5
+animation name: "arm2r"
+object name length: 5
+object name: "handr"
+mesh name length: 5
+mesh name: "handr"
+parent name length: 5
+parent name: "arm2r"
+animation name length: 5
+animation name: "handr"
+object name length: 4
+object name: "head"
+mesh name length: 4
+mesh name: "head"
+parent name length: 4
+parent name: "body"
+animation name length: 4
+animation name: "head"
+object name length: 5
+object name: "arm1l"
+mesh name length: 5
+mesh name: "arm1l"
+parent name length: 4
+parent name: "body"
+animation name length: 5
+animation name: "arm1l"
+object name length: 5
+object name: "arm2l"
+mesh name length: 5
+mesh name: "arm2l"
+parent name length: 5
+parent name: "arm1l"
+animation name length: 5
+animation name: "arm2l"
+object name length: 5
+object name: "handl"
+mesh name length: 5
+mesh name: "handl"
+parent name length: 5
+parent name: "arm2l"
+animation name length: 5
+animation name: "handl"
+number of animations: 12
+animation name length: 4
+animation name: "body"
+animation keys: 5
+t: 1
+t: 2
+t: 3
+t: 4
+t: 5
+animation name length: 5
+animation name: "leg1l"
+animation keys: 5
+t: 1
+t: 2
+t: 3
+t: 4
+t: 5
+animation name length: 5
+animation name: "leg2l"
+animation keys: 5
+t: 1
+t: 2
+t: 3
+t: 4
+t: 5
+animation name length: 5
+animation name: "leg1r"
+animation keys: 5
+t: 1
+t: 2
+t: 3
+t: 4
+t: 5
+animation name length: 5
+animation name: "leg2r"
+animation keys: 5
+t: 1
+t: 2
+t: 3
+t: 4
+t: 5
+animation name length: 5
+animation name: "arm1r"
+animation keys: 5
+t: 1
+t: 2
+t: 3
+t: 4
+t: 5
+animation name length: 5
+animation name: "arm2r"
+animation keys: 5
+t: 1
+t: 2
+t: 3
+t: 4
+t: 5
+animation name length: 5
+animation name: "handr"
+animation keys: 5
+t: 1
+t: 2
+t: 3
+t: 4
+t: 5
+animation name length: 4
+animation name: "head"
+animation keys: 5
+t: 1
+t: 2
+t: 3
+t: 4
+t: 5
+animation name length: 5
+animation name: "arm1l"
+animation keys: 5
+t: 1
+t: 2
+t: 3
+t: 4
+t: 5
+animation name length: 5
+animation name: "arm2l"
+animation keys: 5
+t: 1
+t: 2
+t: 3
+t: 4
+t: 5
+animation name length: 5
+animation name: "handl"
+animation keys: 5
+t: 1
+t: 2
+t: 3
+t: 4
+t: 5
+read .3d file successfully!
+creating 7 materials...
+material name: "blue"
+material color: 0.010000 0.610000 0.900000
+material name: "cream"
+material color: 0.999000 0.920000 0.229000
+material name: "darkgrey"
+material color: 0.099000 0.099000 0.099000
+material name: "green"
+material color: 0.549000 0.759000 0.290000
+material name: "grey"
+material color: 0.620000 0.620000 0.620000
+material name: "white"
+material color: 0.999000 0.999000 0.999000
+material name: "yellow"
+material color: 0.999000 0.599000 0.000000
+creating 12 objects...
+object name: "body"
+found mesh "body"
+number of geoms: 5
+found material
+num vertices: 531
+num indices: 592
+num edges: 0
+num normals: 531
+num colors: 0
+num uvs: 0
+indices: 106, 105, 104, ...
+vertices: -0.213000, 0.115000, 0.181000, ...
+normals: -0.504000, 0.764000, 0.401000, ...
+found material
+num vertices: 426
+num indices: 44
+num edges: 0
+num normals: 426
+num colors: 0
+num uvs: 0
+indices: 6, 7, 8, ...
+vertices: -0.213000, 0.115000, 0.181000, ...
+normals: -0.504000, 0.764000, 0.401000, ...
+found material
+num vertices: 497
+num indices: 448
+num edges: 0
+num normals: 497
+num colors: 0
+num uvs: 0
+indices: 22, 23, 24, ...
+vertices: -0.213000, 0.115000, 0.181000, ...
+normals: -0.504000, 0.764000, 0.401000, ...
+found material
+num vertices: 430
+num indices: 72
+num edges: 0
+num normals: 430
+num colors: 0
+num uvs: 0
+indices: 407, 406, 405, ...
+vertices: -0.213000, 0.115000, 0.181000, ...
+normals: -0.504000, 0.764000, 0.401000, ...
+found material
+num vertices: 422
+num indices: 24
+num edges: 0
+num normals: 422
+num colors: 0
+num uvs: 0
+indices: 122, 118, 119, ...
+vertices: -0.213000, 0.115000, 0.181000, ...
+normals: -0.504000, 0.764000, 0.401000, ...
+found animation "body"
+num animation keys: 5
+t: 1
+|   1.00   0.00   0.00   0.02 |
+|   0.00   1.00   0.00   0.12 |
+|   0.00   0.00   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 2
+|   1.00   0.00   0.00   0.02 |
+|   0.00   0.98   0.19   0.12 |
+|   0.00  -0.19   0.98   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 3
+|   1.00   0.00   0.00   0.02 |
+|   0.00   0.95  -0.31   0.12 |
+|   0.00   0.31   0.95   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 4
+|   1.00   0.00   0.00   0.02 |
+|   0.00   0.59   0.81   0.12 |
+|   0.00  -0.81   0.59   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 5
+|   1.00   0.00   0.00   0.02 |
+|   0.00   0.89  -0.45   0.12 |
+|   0.00   0.45   0.89   0.00 |
+|   0.00   0.00   1.00   0.00 |
+object name: "leg1l"
+found mesh "leg1l"
+number of geoms: 3
+found material
+num vertices: 96
+num indices: 28
+num edges: 0
+num normals: 96
+num colors: 0
+num uvs: 0
+indices: 55, 54, 57, ...
+vertices: -0.061000, -0.073000, -0.178000, ...
+normals: -0.614000, -0.461000, 0.640000, ...
+found material
+num vertices: 108
+num indices: 106
+num edges: 0
+num normals: 108
+num colors: 0
+num uvs: 0
+indices: 81, 80, 79, ...
+vertices: -0.061000, -0.073000, -0.178000, ...
+normals: -0.614000, -0.461000, 0.640000, ...
+found material
+num vertices: 107
+num indices: 108
+num edges: 0
+num normals: 107
+num colors: 0
+num uvs: 0
+indices: 35, 32, 34, ...
+vertices: -0.061000, -0.073000, -0.178000, ...
+normals: -0.614000, -0.461000, 0.640000, ...
+found animation "leg1l"
+num animation keys: 5
+t: 1
+|   1.00   0.00   0.00  -0.15 |
+|   0.00   1.00   0.00   0.05 |
+|   0.00   0.00   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 2
+|   0.73  -0.50   0.47  -0.15 |
+|   0.54   0.84   0.05   0.05 |
+|  -0.43   0.22   0.88   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 3
+|   1.00   0.00   0.00  -0.15 |
+|   0.00   0.93   0.38   0.05 |
+|   0.00  -0.38   0.93   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 4
+|   1.00   0.00   0.00  -0.15 |
+|   0.00  -0.40  -0.92   0.05 |
+|   0.00   0.92  -0.40   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 5
+|   0.75   0.52   0.41  -0.15 |
+|   0.26   0.34  -0.90   0.05 |
+|  -0.61   0.78   0.12   0.00 |
+|   0.00   0.00   1.00   0.00 |
+object name: "leg2l"
+found mesh "leg2l"
+number of geoms: 3
+found material
+num vertices: 69
+num indices: 22
+num edges: 0
+num normals: 69
+num colors: 0
+num uvs: 0
+indices: 61, 57, 65, ...
+vertices: -0.052000, 0.049000, -0.010000, ...
+normals: -0.474000, 0.424000, 0.771000, ...
+found material
+num vertices: 74
+num indices: 56
+num edges: 0
+num normals: 74
+num colors: 0
+num uvs: 0
+indices: 58, 56, 55, ...
+vertices: -0.052000, 0.049000, -0.010000, ...
+normals: -0.474000, 0.424000, 0.771000, ...
+found material
+num vertices: 73
+num indices: 60
+num edges: 0
+num normals: 73
+num colors: 0
+num uvs: 0
+indices: 9, 6, 2, ...
+vertices: -0.052000, 0.049000, -0.010000, ...
+normals: -0.474000, 0.424000, 0.771000, ...
+found animation "leg2l"
+num animation keys: 5
+t: 1
+|   1.00   0.00   0.00  -0.02 |
+|   0.00   1.00   0.00  -0.02 |
+|   0.00   0.00   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 2
+|   0.96   0.24  -0.16  -0.02 |
+|  -0.17   0.91   0.38  -0.02 |
+|   0.23  -0.33   0.91   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 3
+|   1.00   0.00   0.00  -0.02 |
+|   0.00   0.98   0.17  -0.02 |
+|   0.00  -0.17   0.98   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 4
+|   1.00   0.00   0.00  -0.02 |
+|   0.00   0.66   0.75  -0.02 |
+|   0.00  -0.75   0.66   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 5
+|   1.00   0.00   0.00  -0.02 |
+|   0.00   0.04   1.00  -0.02 |
+|   0.00  -1.00   0.04   0.00 |
+|   0.00   0.00   1.00   0.00 |
+object name: "leg1r"
+found mesh "leg1r"
+number of geoms: 3
+found material
+num vertices: 93
+num indices: 28
+num edges: 0
+num normals: 93
+num colors: 0
+num uvs: 0
+indices: 39, 44, 40, ...
+vertices: -0.028000, 0.069000, -0.130000, ...
+normals: -0.519000, 0.663000, 0.537000, ...
+found material
+num vertices: 109
+num indices: 108
+num edges: 0
+num normals: 109
+num colors: 0
+num uvs: 0
+indices: 26, 25, 24, ...
+vertices: 0.080000, 0.059000, -0.130000, ...
+normals: 0.630000, 0.555000, 0.542000, ...
+found material
+num vertices: 105
+num indices: 106
+num edges: 0
+num normals: 105
+num colors: 0
+num uvs: 0
+indices: 76, 79, 77, ...
+vertices: -0.028000, 0.069000, -0.130000, ...
+normals: -0.519000, 0.663000, 0.537000, ...
+found animation "leg1r"
+num animation keys: 5
+t: 1
+|   1.00   0.00   0.00   0.20 |
+|   0.00   1.00   0.00   0.05 |
+|   0.00   0.00   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 2
+|   0.98   0.09  -0.19   0.20 |
+|  -0.22   0.36  -0.90   0.05 |
+|  -0.01   0.93   0.38   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 3
+|   1.00   0.00   0.00   0.20 |
+|   0.00   0.95   0.31   0.05 |
+|   0.00  -0.31   0.95   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 4
+|   0.96  -0.08  -0.26   0.20 |
+|  -0.22   0.32  -0.92   0.05 |
+|   0.16   0.94   0.29   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 5
+|   0.91  -0.31  -0.27   0.20 |
+|  -0.17   0.32  -0.93   0.05 |
+|   0.38   0.89   0.25   0.00 |
+|   0.00   0.00   1.00   0.00 |
+object name: "leg2r"
+found mesh "leg2r"
+number of geoms: 3
+found material
+num vertices: 72
+num indices: 60
+num edges: 0
+num normals: 72
+num colors: 0
+num uvs: 0
+indices: 9, 7, 10, ...
+vertices: -0.067000, 0.096000, -0.051000, ...
+normals: -0.703000, 0.644000, 0.299000, ...
+found material
+num vertices: 71
+num indices: 56
+num edges: 0
+num normals: 71
+num colors: 0
+num uvs: 0
+indices: 41, 44, 42, ...
+vertices: -0.067000, 0.096000, -0.051000, ...
+normals: -0.703000, 0.644000, 0.299000, ...
+found material
+num vertices: 65
+num indices: 22
+num edges: 0
+num normals: 65
+num colors: 0
+num uvs: 0
+indices: 63, 57, 53, ...
+vertices: -0.067000, 0.096000, -0.051000, ...
+normals: -0.703000, 0.644000, 0.299000, ...
+found animation "leg2r"
+num animation keys: 5
+t: 1
+|   1.00   0.00   0.00   0.02 |
+|   0.00   1.00   0.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 2
+|   0.97   0.23  -0.04   0.02 |
+|  -0.07   0.45   0.89   0.00 |
+|   0.22  -0.86   0.46   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 3
+|   1.00   0.00   0.00   0.02 |
+|   0.00   0.90   0.44   0.00 |
+|   0.00  -0.44   0.90   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 4
+|   1.00   0.00   0.00   0.02 |
+|   0.00  -0.24   0.97   0.00 |
+|   0.00  -0.97  -0.24   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 5
+|   1.00   0.00   0.00   0.02 |
+|   0.00   0.96   0.29   0.00 |
+|   0.00  -0.29   0.96   0.00 |
+|   0.00   0.00   1.00   0.00 |
+object name: "arm1r"
+found mesh "arm1r"
+number of geoms: 2
+found material
+num vertices: 40
+num indices: 56
+num edges: 0
+num normals: 40
+num colors: 0
+num uvs: 0
+indices: 4, 1, 0, ...
+vertices: 0.038000, 0.047000, -0.165000, ...
+normals: 0.660000, 0.561000, -0.499000, ...
+found material
+num vertices: 31
+num indices: 20
+num edges: 0
+num normals: 31
+num colors: 0
+num uvs: 0
+indices: 19, 30, 20, ...
+vertices: 0.025000, -0.035000, -0.048000, ...
+normals: 0.485000, -0.702000, 0.520000, ...
+found animation "arm1r"
+num animation keys: 5
+t: 1
+|   1.00   0.00   0.00   0.40 |
+|   0.00   1.00   0.00   0.05 |
+|   0.00   0.00   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 2
+|   0.84   0.53  -0.10   0.40 |
+|  -0.38   0.43  -0.82   0.05 |
+|  -0.39   0.73   0.56   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 3
+|   0.84   0.13  -0.52   0.40 |
+|   0.15   0.88   0.46   0.05 |
+|   0.52  -0.47   0.72   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 4
+|   0.88  -0.30   0.38   0.40 |
+|   0.28  -0.33  -0.90   0.05 |
+|   0.39   0.89  -0.21   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 5
+|   0.63   0.00  -0.78   0.40 |
+|  -0.74   0.30  -0.60   0.05 |
+|   0.23   0.95   0.19   0.00 |
+|   0.00   0.00   1.00   0.00 |
+object name: "arm2r"
+found mesh "arm2r"
+number of geoms: 1
+found material
+num vertices: 26
+num indices: 48
+num edges: 0
+num normals: 26
+num colors: 0
+num uvs: 0
+indices: 0, 10, 11, ...
+vertices: -0.060000, -0.042000, -0.154000, ...
+normals: -0.693000, -0.687000, -0.215000, ...
+found animation "arm2r"
+num animation keys: 5
+t: 1
+|   1.00   0.00   0.00   0.00 |
+|   0.00   1.00   0.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 2
+|   0.86   0.00   0.50   0.00 |
+|   0.00   1.00   0.00   0.00 |
+|  -0.50   0.00   0.86   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 3
+|   0.96   0.00   0.28   0.00 |
+|   0.00   1.00   0.00   0.00 |
+|  -0.28   0.00   0.96   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 4
+|   0.95   0.00   0.32   0.00 |
+|   0.00   1.00   0.00   0.00 |
+|  -0.32   0.00   0.95   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 5
+|   0.94   0.00   0.34   0.00 |
+|   0.00   1.00   0.00   0.00 |
+|  -0.34   0.00   0.94   0.00 |
+|   0.00   0.00   1.00   0.00 |
+object name: "handr"
+found mesh "handr"
+number of geoms: 1
+found material
+num vertices: 80
+num indices: 120
+num edges: 0
+num normals: 80
+num colors: 0
+num uvs: 0
+indices: 77, 79, 76, ...
+vertices: 0.043000, -0.035000, -0.128000, ...
+normals: 0.360000, -0.879000, -0.310000, ...
+found animation "handr"
+num animation keys: 5
+t: 1
+|   1.00   0.00   0.00   0.00 |
+|   0.00   1.00   0.00   0.03 |
+|   0.00   0.00   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 2
+|   0.89   0.06  -0.46   0.00 |
+|  -0.46   0.00  -0.89   0.03 |
+|  -0.05   1.00   0.03   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 3
+|   0.83   0.52  -0.21   0.00 |
+|  -0.56   0.77  -0.30   0.03 |
+|   0.00   0.37   0.93   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 4
+|   0.35   0.63   0.69   0.00 |
+|  -0.92   0.39   0.10   0.03 |
+|  -0.20  -0.67   0.71   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 5
+|   1.00   0.00   0.00   0.00 |
+|   0.00   1.00   0.00   0.03 |
+|   0.00   0.00   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+object name: "head"
+found mesh "head"
+number of geoms: 5
+found material
+num vertices: 227
+num indices: 53
+num edges: 0
+num normals: 227
+num colors: 0
+num uvs: 0
+indices: 55, 59, 56, ...
+vertices: 0.014000, -0.032000, -0.089000, ...
+normals: 0.710000, -0.148000, -0.687000, ...
+found material
+num vertices: 223
+num indices: 44
+num edges: 0
+num normals: 223
+num colors: 0
+num uvs: 0
+indices: 33, 31, 32, ...
+vertices: 0.014000, -0.032000, -0.089000, ...
+normals: 0.710000, -0.148000, -0.687000, ...
+found material
+num vertices: 219
+num indices: 3
+num edges: 0
+num normals: 219
+num colors: 0
+num uvs: 0
+indices: 49, 47, 45, ...
+vertices: 0.014000, -0.032000, -0.089000, ...
+normals: 0.710000, -0.148000, -0.687000, ...
+found material
+num vertices: 304
+num indices: 472
+num edges: 0
+num normals: 304
+num colors: 0
+num uvs: 0
+indices: 120, 107, 119, ...
+vertices: 0.014000, -0.032000, -0.089000, ...
+normals: 0.710000, -0.148000, -0.687000, ...
+found material
+num vertices: 226
+num indices: 44
+num edges: 0
+num normals: 226
+num colors: 0
+num uvs: 0
+indices: 6, 5, 4, ...
+vertices: 0.006000, -0.051000, -0.087000, ...
+normals: 0.550000, -0.505000, -0.664000, ...
+found animation "head"
+num animation keys: 5
+t: 1
+|   1.00   0.00   0.00   0.01 |
+|   0.00   1.00   0.00   0.05 |
+|   0.00   0.00   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 2
+|   1.00   0.00   0.00   0.01 |
+|   0.00   0.98   0.22   0.05 |
+|   0.00  -0.22   0.98   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 3
+|   1.00   0.00   0.00   0.01 |
+|   0.00   0.90   0.43   0.05 |
+|   0.00  -0.43   0.90   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 4
+|   1.00   0.00   0.00   0.01 |
+|   0.00   0.87  -0.49   0.05 |
+|   0.00   0.49   0.87   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 5
+|   1.00   0.00   0.00   0.01 |
+|   0.00   1.00   0.00   0.05 |
+|   0.00   0.00   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+object name: "arm1l"
+found mesh "arm1l"
+number of geoms: 2
+found material
+num vertices: 38
+num indices: 56
+num edges: 0
+num normals: 38
+num colors: 0
+num uvs: 0
+indices: 5, 7, 4, ...
+vertices: 0.038000, -0.045000, -0.188000, ...
+normals: 0.574000, -0.599000, -0.556000, ...
+found material
+num vertices: 34
+num indices: 20
+num edges: 0
+num normals: 34
+num colors: 0
+num uvs: 0
+indices: 30, 24, 33, ...
+vertices: 0.038000, -0.045000, -0.188000, ...
+normals: 0.574000, -0.599000, -0.556000, ...
+found animation "arm1l"
+num animation keys: 5
+t: 1
+|   1.00   0.00   0.00  -0.36 |
+|   0.00   1.00   0.00   0.06 |
+|   0.00   0.00   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 2
+|   0.96   0.00   0.29  -0.36 |
+|   0.25   0.48  -0.84   0.06 |
+|  -0.14   0.88   0.46   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 3
+|   0.92   0.25   0.30  -0.36 |
+|  -0.30   0.94   0.13   0.06 |
+|  -0.25  -0.21   0.94   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 4
+|   0.43  -0.09   0.90  -0.36 |
+|   0.60   0.77  -0.21   0.06 |
+|  -0.67   0.63   0.38   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 5
+|   0.82   0.00   0.58  -0.36 |
+|   0.58  -0.05  -0.81   0.06 |
+|   0.03   1.00  -0.04   0.00 |
+|   0.00   0.00   1.00   0.00 |
+object name: "arm2l"
+found mesh "arm2l"
+number of geoms: 1
+found material
+num vertices: 26
+num indices: 48
+num edges: 0
+num normals: 26
+num colors: 0
+num uvs: 0
+indices: 11, 3, 10, ...
+vertices: 0.079000, 0.056000, -0.165000, ...
+normals: 0.713000, 0.685000, -0.144000, ...
+found animation "arm2l"
+num animation keys: 5
+t: 1
+|   1.00   0.00   0.00   0.01 |
+|   0.00   1.00   0.00   0.02 |
+|   0.00   0.00   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 2
+|   0.93   0.00  -0.37   0.01 |
+|   0.00   1.00   0.00   0.02 |
+|   0.37   0.00   0.93   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 3
+|   0.94   0.00  -0.35   0.01 |
+|   0.00   1.00   0.00   0.02 |
+|   0.35   0.00   0.94   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 4
+|   0.99   0.00  -0.17   0.01 |
+|   0.00   1.00   0.00   0.02 |
+|   0.17   0.00   0.99   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 5
+|   0.80   0.00  -0.60   0.01 |
+|   0.00   1.00   0.00   0.02 |
+|   0.60   0.00   0.80   0.00 |
+|   0.00   0.00   1.00   0.00 |
+object name: "handl"
+found mesh "handl"
+number of geoms: 1
+found material
+num vertices: 80
+num indices: 120
+num edges: 0
+num normals: 80
+num colors: 0
+num uvs: 0
+indices: 69, 66, 65, ...
+vertices: -0.075000, 0.021000, -0.130000, ...
+normals: -0.644000, 0.445000, -0.621000, ...
+found animation "handl"
+num animation keys: 5
+t: 1
+|   1.00   0.00   0.00   0.00 |
+|   0.00   1.00   0.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 2
+|  -0.04  -0.87   0.49   0.00 |
+|   0.96  -0.17  -0.22   0.00 |
+|   0.28   0.46   0.84   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 3
+|   0.38  -0.90   0.20   0.00 |
+|   0.93   0.37  -0.08   0.00 |
+|   0.00   0.21   0.98   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 4
+|   0.90  -0.43   0.02   0.00 |
+|   0.43   0.90  -0.04   0.00 |
+|   0.00   0.05   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+t: 5
+|   1.00   0.00   0.00   0.00 |
+|   0.00   1.00   0.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+|   0.00   0.00   1.00   0.00 |
+num children: 1
+found parent
+num children: 1
+found parent
+num children: 2
+found parent
+num children: 1
+found parent
+num children: 3
+found parent
+num children: 1
+found parent
+num children: 1
+found parent
+num children: 4
+found parent
+num children: 5
+found parent
+num children: 1
+found parent
+num children: 1
+found parent
+VBO size: 117648
+IBO size: 9132
+root found!
