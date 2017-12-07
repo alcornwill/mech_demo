@@ -129,18 +129,12 @@ def write_length(data):
     
 def write_array(data):
     fixed = type(data[0]) == float
-    fmt = 'h' if fixed else 'H'
-    
     # write data
     for item in data:
         if fixed:
-            item = int(item * 1000) # fixed point precision 3
-        b = pack(fmt, item)
-        out.write(b)
-    if fixed:
-        log.write("wrote: short[{}]: array\n".format(len(data)))
-    else:
-        log.write("wrote: ushort[{}]: array\n".format(len(data)))
+            write_fixed(item)
+        else:
+            write_ushort(item)
 
 def write_name(name):
     # writes number of characters, followed by char array
@@ -178,21 +172,17 @@ def bmesh_split(bm, geom, dest):
         assert(len(dest.faces) == len(geom))
         
 def bmesh_split_by_material(bm, mat):
-    # GAY
     dest = bm.copy()
     dest.faces.ensure_lookup_table()
 
     for face in list(dest.faces):
         if face.material_index != mat:
-            v1, v2, v3 = face.verts
-            dest.faces.remove(face)
-            # bmesh doesn't remove loose verts
-            if v1.is_valid and not v1.link_faces:
-                dest.verts.remove(v1)
-            if v1.is_valid and not v1.link_faces:
-                dest.verts.remove(v1)
-            if v1.is_valid and not v1.link_faces:
-                dest.verts.remove(v1)           
+            dest.faces.remove(face)     
+            
+    for v in list(dest.verts):
+        # remove loose verts
+        if v.is_valid and v.is_wire:
+            dest.verts.remove(v)
     
     dest.faces.index_update()
     dest.edges.index_update()

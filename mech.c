@@ -78,6 +78,8 @@ int init()
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 3 );
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
     
+    //glEnable(GL_DEPTH_TEST);
+    
     //Create window
     gWindow = SDL_CreateWindow( TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
     if( gWindow == NULL )
@@ -216,6 +218,13 @@ int initGL()
     
     //Initialize clear color
     glClearColor( 0.5f, 0.5f, 0.5f, 1.f );
+    glClearDepth( 1000.0f );
+    
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
     
     return 1;
 }
@@ -240,14 +249,13 @@ void initBuffers() {
     
     for (int i = 0; i < gNumObjects; ++i) {
         struct Object *obj = &gObjects[i];
-        unsigned int bvtx = baseVertex;
         for (int j=0; j < obj->mesh.numGeoms; ++j) {
             struct Geom * geom = &obj->mesh.geoms[j];
             size_t size = geom->numVertices * 4 * 3;
             glBufferSubData( GL_ARRAY_BUFFER, vboOffset, size, geom->vertices);
-            printf("vertex buffer offset: %i  base vertex: %i\n", vboOffset, bvtx);
+            printf("vertex buffer offset: %i  base vertex: %i\n", vboOffset, baseVertex);
             vboOffset += size;
-            geom->drawinfo.baseVertex = bvtx;
+            geom->drawinfo.baseVertex = baseVertex;
             baseVertex += geom->numVertices;
         }
     }
@@ -554,8 +562,8 @@ void load3DFile() {
             key->transform = mat4(
                 FIXED(t[0]), FIXED(t[1]), FIXED(t[2]), FIXED(t[3]), 
                 FIXED(t[4]), FIXED(t[5]), FIXED(t[6]), FIXED(t[7]),
-                FIXED(t[8]), FIXED(t[9]), FIXED(t[10]), FIXED(t[12]),
-                FIXED(t[13]), FIXED(t[14]), FIXED(t[15]), FIXED(t[16])
+                FIXED(t[8]), FIXED(t[9]), FIXED(t[10]), FIXED(t[11]),
+                FIXED(t[12]), FIXED(t[13]), FIXED(t[14]), FIXED(t[15])
             );
             m4_print(key->transform);
         }
@@ -621,11 +629,14 @@ void load3DFile() {
 
 void initMech()
 {    
+    gModelPos = vec3(0.0f, 0.0f, 0.0f);
+
     // perspective projection and view matrix
     proj = m4_perspective(FOV, ASPECT_RATIO, NEAR, FAR);
     
     view = m4_translation(vec3(0, -1, -5));
-    view = m4_mul(view, m4_rotation_x(-M_PI / 2));
+    mat4_t tmp = m4_mul(m4_rotation_y(M_PI), m4_rotation_x(-M_PI / 2));
+    view = m4_mul(view, tmp);
     
     pv = m4_mul(proj, view);
 }
@@ -639,12 +650,10 @@ void updateObject(struct Object * obj) {
     
     struct AnimKey * key = &obj->anim.keys[pose];
     if (obj->parent) {
-        //obj->model = m4_mul(obj->parent->model, key->transform);
-        obj->model = obj->parent->model;
+        obj->model = m4_mul(obj->parent->model, key->transform);
     } else {
         // assume is root...
-        //obj->model = m4_mul(m4_translation(gModelPos), key->transform);
-        obj->model = m4_translation(gModelPos);
+        obj->model = m4_mul(m4_translation(gModelPos), key->transform);
     }
     
     
@@ -679,11 +688,11 @@ void update(float dt)
     if (keys[SDL_SCANCODE_5])
         pose = 4;
     if (keys[SDL_SCANCODE_W])
-        gModelPos.y += -0.1f;
+        gModelPos.y += 0.1f;
     if (keys[SDL_SCANCODE_A])
         gModelPos.x += -0.1f;
     if (keys[SDL_SCANCODE_S])
-        gModelPos.y += 0.1f;
+        gModelPos.y += -0.1f;
     if (keys[SDL_SCANCODE_D])
         gModelPos.x += 0.1f;
     
@@ -699,7 +708,8 @@ void update(float dt)
 
 void render()
 {
-	glClear( GL_COLOR_BUFFER_BIT );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    
     
     glUseProgram( gProgramID );
     glBindVertexArray(gVAO);

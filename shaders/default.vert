@@ -3,7 +3,7 @@
 //#define USE_VERTEX_COLORS
 //#define UNLIT
 
-const vec3 ambient = vec3(0.1f, 0.1f, 0.1f);
+const vec3 ambient = vec3(0.5f, 0.5f, 0.5f);
 const vec3 dlight = vec3(0.03f, 0.98f, 0.08f); // direction
 
 in vec3 position;
