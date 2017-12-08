@@ -1,37 +1,34 @@
 
 
-ok
-    todo rename numIndices -> numFaces?
-    THERES SOMETHING WRONG WITH ALL THESE FUCKING MATRICES BLENDER IS GIVING ME
-        
-    get attribute flats (use_indices, use_edges, use_colors, ...)
+todo
+    get attribute flags (use_indices, use_edges, use_colors, ...)
+    do error handling properly and more specific error messages
     COPY ALL NAMES AND NAME LENGTHS TO INTERNAL DATA STRUCTURES...
         for debug purposes
         USE NULL TERMINATING STRINGS? (CONVERT AFTER READ BINARY)
+        
     export camera pos from blend?
-    
-
-make mech rotate
-
-need a quaternion lerp        
-
-
-exporter
-    endianness might be wrong?
-    compression!
-        lzw
-
-experiment
-    round floats to look like PS1 floating point precision errors
-    
-learning
+    compress .3d
+        lzw?
+        
+    lerp between animation poses
+        need a quaternion lerp
+        
     how do they do reading of binary files in other C libraries?
-    do error handling properly and more specific error messages
     tests?
     anything to learn by looking at disassembly?
     probably use OpenGLES
     https://www.khronos.org/opengl/wiki/Vertex_Specification_Best_Practices
     https://www.khronos.org/opengl/wiki/Normalized_Integer
+
+
+
+
+
+
+
+    
+    
     
     
 int getShaderSource(char path[], GLint *shaderLen, char * shaderSource) {

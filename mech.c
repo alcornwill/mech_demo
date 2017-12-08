@@ -45,7 +45,6 @@ GLint gVertexPos3DLocation = -1;
 GLint gNormalLocation = -1;
 //GLint gColorLocation = -1;
 GLint gMVPMatrixLocation = -1;
-GLint gNormalMatrixLocation = -1;
 GLint gDiffuseColorLocation = -1;
 GLuint gVBO = 0;
 GLuint gIBO = 0;
@@ -61,6 +60,7 @@ mat4_t pv;
 unsigned char pose = 0;
 
 vec3_t gModelPos;
+vec3_t gModelRot;
 
 
 int init()
@@ -197,14 +197,6 @@ int initGL()
         return 0;
     }
     
-    //Get normal matrix location
-    gNormalMatrixLocation = glGetUniformLocation( gProgramID, "NormalMatrix" );
-    if( gNormalMatrixLocation == -1 )
-    {
-        printf( "NormalMatrix is not a valid glsl program variable!\n" );
-        return 0;
-    }
-    
     //Get diffuse color location
     gDiffuseColorLocation = glGetUniformLocation( gProgramID, "DiffuseColor" );
     if( gDiffuseColorLocation == -1 )
@@ -217,7 +209,7 @@ int initGL()
     // glBindFragDataLocation(gProgramID, 0, "outputColor");
     
     //Initialize clear color
-    glClearColor( 0.5f, 0.5f, 0.5f, 1.f );
+    glClearColor( 0.0f, 0.0f, 0.0f, 1.f );
     glClearDepth( 1000.0f );
     
     glEnable(GL_CULL_FACE);
@@ -630,13 +622,13 @@ void load3DFile() {
 void initMech()
 {    
     gModelPos = vec3(0.0f, 0.0f, 0.0f);
+    gModelRot = vec3(0.0f, M_PI, 0.0f);
 
     // perspective projection and view matrix
     proj = m4_perspective(FOV, ASPECT_RATIO, NEAR, FAR);
     
-    view = m4_translation(vec3(0, -1, -5));
-    mat4_t tmp = m4_mul(m4_rotation_y(M_PI), m4_rotation_x(-M_PI / 2));
-    view = m4_mul(view, tmp);
+    view = m4_translation(vec3(0.2f, -0.4f, -5));
+    view = m4_mul(view, m4_rotation_x(-M_PI * 0.45f));
     
     pv = m4_mul(proj, view);
 }
@@ -653,12 +645,12 @@ void updateObject(struct Object * obj) {
         obj->model = m4_mul(obj->parent->model, key->transform);
     } else {
         // assume is root...
-        obj->model = m4_mul(m4_translation(gModelPos), key->transform);
+        mat4_t tmp = m4_mul(m4_translation(gModelPos), m4_rotation_z(sin(gModelRot.y)+M_PI * 0.8f));
+        obj->model = m4_mul(tmp, key->transform);
     }
     
     
     obj->mvp = m4_mul(pv, obj->model);
-    obj->normalMatrix = m4_invert_affine(m4_transpose(obj->model));
     
     for (int i=0; i < obj->numChildren; ++i) {
         struct Object * child = NULL;
@@ -699,6 +691,9 @@ void update(float dt)
     int x = 0, y = 0;
     SDL_GetMouseState( &x, &y );
 
+    gModelRot.y += 0.01f;
+    gModelRot.y = fmod(gModelRot.y, 2*M_PI);
+    
     updateObject(gRoot);
     
     // for (int i=0; i < gNumObjects; ++i) {
@@ -717,7 +712,6 @@ void render()
     for (int i = 0; i < gNumObjects; ++i) {
         struct Object * obj = &gObjects[i];
         glUniformMatrix4fv(gMVPMatrixLocation, 1, GL_FALSE, (GLfloat*)&obj->mvp);
-        glUniformMatrix3fv(gNormalMatrixLocation, 1, GL_FALSE, (GLfloat*)&obj->normalMatrix);
         for (int j = 0; j < obj->mesh.numGeoms; ++j) {
             struct Geom * geom = &obj->mesh.geoms[j];
             glUniform3f(gDiffuseColorLocation, geom->mat->color[0], geom->mat->color[1], geom->mat->color[2]);
@@ -725,14 +719,6 @@ void render()
             glDrawElementsBaseVertex( GL_TRIANGLES, geom->numIndices * 3, GL_UNSIGNED_SHORT, (void*)geom->drawinfo.offset, geom->drawinfo.baseVertex );
         }
     }
-    
-    // glUniformMatrix4fv(gMVPMatrixLocation, 1, GL_FALSE, &gRoot->mvp);
-    // glUniformMatrix4fv(gNormalMatrixLocation, 1, GL_FALSE, &gRoot->normalMatrix);
-    
-    // struct Geom * geom = &gRoot->mesh.geoms[0];
-    // glUniform3f(gDiffuseColorLocation, geom->mat->color[0], geom->mat->color[1], geom->mat->color[2]);
-    // glDrawElementsBaseVertex( GL_TRIANGLES, geom->numIndices, GL_UNSIGNED_SHORT, NULL, 0 );
-    
 
     glUseProgram( 0 );
 

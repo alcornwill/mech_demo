@@ -66,7 +66,6 @@ struct Object {
     // vec3_t rotation;
     mat4_t model;
     mat4_t mvp;
-    mat4_t normalMatrix;
 };
 
 void setObjectParent(struct Object * obj, struct Object * parent);
