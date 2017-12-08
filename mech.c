@@ -45,6 +45,7 @@ GLint gVertexPos3DLocation = -1;
 GLint gNormalLocation = -1;
 //GLint gColorLocation = -1;
 GLint gMVPMatrixLocation = -1;
+GLint gNormalMatrixLocation = -1;
 GLint gDiffuseColorLocation = -1;
 GLuint gVBO = 0;
 GLuint gIBO = 0;
@@ -197,6 +198,14 @@ int initGL()
         return 0;
     }
     
+    //Get normal matrix location
+    gNormalMatrixLocation = glGetUniformLocation( gProgramID, "NormalMatrix" );
+    if( gNormalMatrixLocation == -1 )
+    {
+        printf( "NormalMatrix is not a valid glsl program variable!\n" );
+        return 0;
+    }
+    
     //Get diffuse color location
     gDiffuseColorLocation = glGetUniformLocation( gProgramID, "DiffuseColor" );
     if( gDiffuseColorLocation == -1 )
@@ -209,7 +218,7 @@ int initGL()
     // glBindFragDataLocation(gProgramID, 0, "outputColor");
     
     //Initialize clear color
-    glClearColor( 0.0f, 0.0f, 0.0f, 1.f );
+    glClearColor( 9.9f, 9.9f, 9.9f, 1.0f );
     glClearDepth( 1000.0f );
     
     glEnable(GL_CULL_FACE);
@@ -651,6 +660,7 @@ void updateObject(struct Object * obj) {
     
     
     obj->mvp = m4_mul(pv, obj->model);
+    obj->normalMatrix = m4_transpose(m4_invert_affine(m4_mul(view, obj->model)));
     
     for (int i=0; i < obj->numChildren; ++i) {
         struct Object * child = NULL;
@@ -712,6 +722,7 @@ void render()
     for (int i = 0; i < gNumObjects; ++i) {
         struct Object * obj = &gObjects[i];
         glUniformMatrix4fv(gMVPMatrixLocation, 1, GL_FALSE, (GLfloat*)&obj->mvp);
+        glUniformMatrix3fv(gNormalMatrixLocation, 1, GL_FALSE, (GLfloat*)&obj->normalMatrix);
         for (int j = 0; j < obj->mesh.numGeoms; ++j) {
             struct Geom * geom = &obj->mesh.geoms[j];
             glUniform3f(gDiffuseColorLocation, geom->mat->color[0], geom->mat->color[1], geom->mat->color[2]);

@@ -160,16 +160,6 @@ def write_color(color):
     for val in list(color):
         write_fixed(val)
     log.write("wrote: color\n")
-    
-def bmesh_split(bm, geom, dest):
-    dest.faces.ensure_lookup_table()
-    indices = [elem.index for elem in geom]
-    if type(geom[0]) == BMFace:
-        for face in list(dest.faces):
-            if face.index not in indices:
-                dest.faces.remove(dest.faces[face.index])
-                dest.faces.ensure_lookup_table()
-        assert(len(dest.faces) == len(geom))
         
 def bmesh_split_by_material(bm, mat):
     dest = bm.copy()
@@ -181,7 +171,7 @@ def bmesh_split_by_material(bm, mat):
             
     for v in list(dest.verts):
         # remove loose verts
-        if v.is_valid and v.is_wire:
+        if v.is_valid and not v.link_loops:
             dest.verts.remove(v)
     
     dest.faces.index_update()
@@ -214,8 +204,6 @@ def write_mesh(obj, use_indices, use_edges, use_normals, use_colors, use_uvs):
         if faces:
             ##bm2 = bmesh.new()
             #bmesh.ops.split(bm, geom=faces, dest=bm2)
-            #bm2 = bm.copy()
-            #bmesh_split(bm, geom=faces, dest=bm2)
             bm2 = bmesh_split_by_material(bm, mat)
             bms.append((bm2, mats[mat]))
             

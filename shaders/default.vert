@@ -3,9 +3,9 @@
 //#define USE_VERTEX_COLORS
 //#define UNLIT
 
-const vec3 ambient = vec3(0.3f, 0.3f, 0.3f);
-const vec3 dlight = vec3(0.03f, -0.98f, 0.08f); // direction
-const float dfact = 0.7f; // directional light intensity
+const vec3 ambient = vec3(0.7f, 0.7f, 0.7f);
+const vec3 dlight = vec3(0.03f, 0.98f, -0.9f); // direction
+const float dfact = 0.2f; // directional light intensity
 
 in vec3 position;
 in vec3 normal;
@@ -13,10 +13,11 @@ in vec3 color;
 //in vec2 uv;
 
 uniform mat4 MVP;
+uniform mat3 NormalMatrix;
 uniform vec3 DiffuseColor;
 
-//flat out vec4 Color;
-out vec4 Color;
+flat out vec4 Color;
+//out vec4 Color;
 
 void directional_light(vec3 surface_normal, inout vec3 scatteredLight)
 {
@@ -45,7 +46,7 @@ void main()
 
     #ifndef UNLIT
 	vec3 scatteredLight = ambient;
-	vec3 surface_normal = normalize(MVP * vec4(normal, 1.0f)).xyz;
+	vec3 surface_normal = normalize(NormalMatrix * normal);
 	directional_light(surface_normal, scatteredLight);
     col *= scatteredLight;
     #endif

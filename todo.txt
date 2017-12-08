@@ -1,6 +1,14 @@
 
 
 todo
+    do 'face colors' for fun
+        when export, duplicate every vertex for every face
+        export vertex colors
+        don't use indexing
+
+    there's something wrong with the directional lighting
+        NormalMatrix? normals?
+
     get attribute flags (use_indices, use_edges, use_colors, ...)
     do error handling properly and more specific error messages
     COPY ALL NAMES AND NAME LENGTHS TO INTERNAL DATA STRUCTURES...
@@ -13,6 +21,7 @@ todo
         
     lerp between animation poses
         need a quaternion lerp
+    sound effect
         
     how do they do reading of binary files in other C libraries?
     tests?

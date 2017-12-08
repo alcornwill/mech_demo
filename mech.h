@@ -65,6 +65,7 @@ struct Object {
     // vec3_t position;
     // vec3_t rotation;
     mat4_t model;
+    mat4_t normalMatrix;
     mat4_t mvp;
 };
 
