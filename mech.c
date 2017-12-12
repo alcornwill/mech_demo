@@ -730,7 +730,7 @@ void render()
     for (int i = 0; i < gNumObjects; ++i) {
         struct Object * obj = &gObjects[i];
         glUniformMatrix4fv(gMVPMatrixLocation, 1, GL_FALSE, (GLfloat*)&obj->mvp);
-        glUniformMatrix3fv(gNormalMatrixLocation, 1, GL_FALSE, (GLfloat*)&obj->normalMatrix);
+        glUniformMatrix4fv(gNormalMatrixLocation, 1, GL_FALSE, (GLfloat*)&obj->normalMatrix);
         for (int j = 0; j < obj->mesh.numGeoms; ++j) {
             struct Geom * geom = &obj->mesh.geoms[j];
             glUniform3f(gDiffuseColorLocation, geom->mat->color[0], geom->mat->color[1], geom->mat->color[2]);

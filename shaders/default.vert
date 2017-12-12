@@ -3,28 +3,19 @@
 //#define USE_VERTEX_COLORS
 //#define UNLIT
 
-const vec3 ambient = vec3(0.7f, 0.7f, 0.7f);
-const vec3 dlight = vec3(0.03f, 0.98f, -0.9f); // direction
-const float dfact = 0.2f; // directional light intensity
-
 in vec3 position;
 in vec3 normal;
 in vec3 color;
 //in vec2 uv;
 
 uniform mat4 MVP;
-uniform mat3 NormalMatrix;
+uniform mat4 NormalMatrix;
 uniform vec3 DiffuseColor;
 
-flat out vec4 Color;
-//out vec4 Color;
+// flat out vec4 Color;
+out vec4 Color;
+out vec3 vtx;
 
-void directional_light(vec3 surface_normal, inout vec3 scatteredLight)
-{
-    vec3 direction = normalize(dlight);
-    float diffuse = max(0.0, dot(surface_normal, direction));
-	scatteredLight += diffuse * dfact;
-}
 
 vec4 emulate_precision_error(float factor, in vec4 pos)
 {
@@ -44,12 +35,7 @@ void main()
 	col *= color;
 	#endif
 
-    #ifndef UNLIT
-	vec3 scatteredLight = ambient;
-	vec3 surface_normal = normalize(NormalMatrix * normal);
-	directional_light(surface_normal, scatteredLight);
-    col *= scatteredLight;
-    #endif
+    vtx = mat3(NormalMatrix) * position + normal * 0;
 
     // note this value is unsaturated, we would saturate with min(color, vec4(1.0)
 	Color = vec4(col, 1.0f);
