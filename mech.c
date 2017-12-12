@@ -660,7 +660,15 @@ void updateObject(struct Object * obj) {
     
     
     obj->mvp = m4_mul(pv, obj->model);
-    obj->normalMatrix = m4_transpose(m4_invert_affine(m4_mul(view, obj->model)));
+    
+    // extract get the rotation matrix from the model matrix
+    mat4_t rot = obj->model;
+    // zero the last column
+    rot.m30 = 0; 
+    rot.m31 = 0;
+    rot.m32 = 0;
+    obj->normalMatrix = rot;
+    //obj->normalMatrix = m4_transpose(m4_invert_affine(obj->model));
     
     for (int i=0; i < obj->numChildren; ++i) {
         struct Object * child = NULL;

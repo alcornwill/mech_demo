@@ -183,8 +183,55 @@ def bmesh_split_by_material(bm, mat):
     assert expected == actual, "expected: {}\nactual: {}".format(expected, actual)
     
     return dest
-                
-def write_mesh(obj, use_indices, use_edges, use_normals, use_colors, use_uvs):
+               
+def write_geom(bm1, mat, use_indices, use_edges, use_normals, use_colors, use_uvs):
+    bm1.faces.ensure_lookup_table()
+    bm1.edges.ensure_lookup_table()
+    
+    # for vert in bm1.verts:
+        # vert.normal_update()
+    
+    # write material name
+    write_name(mat.name)
+
+    # write verts
+    numVerts = len(bm1.verts)
+    verts = [vec for vert in bm1.verts for vec in list(vert.co)]
+    write_ushort(numVerts)
+    write_array(verts)
+        
+    # write indices
+    if use_indices:
+        numIndices = len(bm1.faces)
+        indices = [loop.vert.index for face in bm1.faces for loop in face.loops]
+        write_ushort(numIndices)
+        write_array(indices)
+    else:
+        write_ushort(0)
+    
+    # write edges
+    if use_edges:
+        numEdges = len(bm1.edges)
+        edges = [vert.index for edge in bm1.edges for vert in edge.verts]
+        write_ushort(numEdges)
+        write_array(edges)
+    else:
+        write_ushort(0)
+    
+    # write normals
+    if use_normals:
+        numNormals = len(bm1.verts)
+        normals = [vec for vert in bm1.verts for vec in list(vert.normal)]
+        write_ushort(numNormals)
+        write_array(normals)
+    else:
+        write_ushort(0)
+    
+    # todo colors and uvs
+    write_ushort(0)
+    write_ushort(0)
+               
+def write_mesh(obj, *args):
     data = obj.data
     
     # write name
@@ -211,50 +258,7 @@ def write_mesh(obj, use_indices, use_edges, use_normals, use_colors, use_uvs):
     write_uchar(len(bms))
     
     for bm1, mat in bms:
-        # for each geom
-        bm1.faces.ensure_lookup_table()
-        bm1.edges.ensure_lookup_table()
-        
-        # write material name
-        write_name(mat.name)
-    
-        # write verts
-        numVerts = len(bm1.verts)
-        verts = [vec for vert in bm1.verts for vec in list(vert.co)]
-        write_ushort(numVerts)
-        write_array(verts)
-            
-        # write indices
-        if use_indices:
-            numIndices = len(bm1.faces)
-            indices = [loop.vert.index for face in bm1.faces for loop in face.loops]
-            write_ushort(numIndices)
-            write_array(indices)
-        else:
-            write_ushort(0)
-        
-        # write edges
-        if use_edges:
-            numEdges = len(bm1.edges)
-            edges = [vert.index for edge in bm1.edges for vert in edge.verts]
-            write_ushort(numEdges)
-            write_array(edges)
-        else:
-            write_ushort(0)
-        
-        # write normals
-        if use_normals:
-            numNormals = len(bm1.verts)
-            normals = [vec for vert in bm1.verts for vec in list(vert.normal)]
-            write_ushort(numNormals)
-            write_array(normals)
-        else:
-            write_ushort(0)
-        
-        # todo colors and uvs
-        write_ushort(0)
-        write_ushort(0)
-        
+        write_geom(bm1, mat, *args)
         bm1.free()
         
     bm.free()
